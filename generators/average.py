@@ -2,12 +2,12 @@
 # @Author: ckochman
 # @Date:   2017-05-04 16:47:30
 # @Last Modified by:   ckochman
-# @Last Modified time: 2017-05-04 16:47:47
+# @Last Modified time: 2017-05-04 17:29:15
 
 from started import started
 
 @started
-def avg():
+def average():
     """ generator that holds a rolling average """
     count = 0.0
     total = generators.sum()
