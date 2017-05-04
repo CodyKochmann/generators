@@ -2,7 +2,7 @@
 # @Author: ckochman
 # @Date:   2017-05-04 17:06:34
 # @Last Modified by:   ckochman
-# @Last Modified time: 2017-05-04 17:43:14
+# @Last Modified time: 2017-05-04 18:06:52
 
 from os import listdir
 from generators import read_file
@@ -20,7 +20,6 @@ gen = (i for i in gen if not i.endswith('__init__.py'))
 gen = (i for i in gen if not i.endswith('.pyc'))
 # read the lines of each file
 gen = (((x for x in read_file(i) if not x.startswith("#") or not len(x.strip())),i) for i in gen)
-
 
 with open('README.md', 'w') as readme:
     readme.write(readme_header+'\n')

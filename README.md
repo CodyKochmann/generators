@@ -30,6 +30,25 @@ def counter():
         c += 1
 ```
 
+### fork.py
+```python
+def fork(g,c=2):
+    """ fork a generator in python """
+    return ((i,)*c for i in g)
+```
+
+### multi_ops.py
+```python
+def multi_ops(g, *f):
+    """ fork a generator with multiple operations being
+        ran on its values """
+    for i in g:
+        if len(f)>1:
+            yield tuple(func(i) for func in f)
+        else:
+            yield f[0](i)
+```
+
 ### read_file.py
 ```python
 def read_file(path):
@@ -74,5 +93,15 @@ def total():
     total = 0
     while 1:
         total += yield total
+```
+
+### unfork.py
+```python
+def unfork(g):
+    """ returns a generator with one output at a time if
+        multiple outputs are coming out of the given """
+    for i in g:
+        for x in i:
+            yield x
 ```
 
