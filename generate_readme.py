@@ -2,7 +2,7 @@
 # @Author: ckochman
 # @Date:   2017-05-04 17:06:34
 # @Last Modified by:   ckochman
-# @Last Modified time: 2017-05-05 11:40:17
+# @Last Modified time: 2017-05-05 11:54:14
 
 from os import listdir
 from generators import read_file
@@ -34,3 +34,6 @@ with open('README.md', 'w') as readme:
         readme.write('### '+path.split('/')[1]+'\n```python')
         readme.writelines(f)
         readme.write('```\n\n')
+
+with open('README.md') as f:
+    print(f.read())

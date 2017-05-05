@@ -40,13 +40,14 @@ def fork(g,c=2):
 ### multi_ops.py
 ```python
 def multi_ops(g, *f):
-    """ fork a generator with multiple operations being
-        ran on its values """
+    """ fork a generator with multiple operations/functions """
+    assert all(callable(func) for func in f), 'multi_ops can only apply functions to the first argument'
     for i in g:
-        if len(f)>1:
+        if len(f) > 1:
             yield tuple(func(i) for func in f)
-        else:
+        elif len(f) == 1:
             yield f[0](i)
+
 ```
 
 ### read_file.py
