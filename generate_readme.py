@@ -2,7 +2,7 @@
 # @Author: ckochman
 # @Date:   2017-05-04 17:06:34
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2017-05-05 12:06:27
+# @Last Modified time: 2017-05-05 16:34:43
 
 from os import listdir
 from generators import read_file

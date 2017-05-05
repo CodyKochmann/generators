@@ -77,6 +77,17 @@ def started(generator_function):
     return wrapper
 ```
 
+### tee.py
+```python
+from __future__ import print_function
+
+def tee(pipeline, name, output_function=print):
+    for i in pipeline:
+        output_function('{} - {}'.format(name,i))
+        yield i
+
+```
+
 ### timer.py
 ```python
 from started import started
