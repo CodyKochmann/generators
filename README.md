@@ -73,14 +73,15 @@ def started(generator_function):
 ### timer.py
 ```python
 from started import started
+from time import time
 
 @started
 def timer():
     """ generator that tracks time """
     start_time = time()
-    previous = start_time
     while 1:
         yield time()-start_time
+
 ```
 
 ### total.py
