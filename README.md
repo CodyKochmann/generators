@@ -39,14 +39,20 @@ def fork(g,c=2):
 
 ### multi_ops.py
 ```python
-def multi_ops(g, *f):
-    """ fork a generator with multiple operations/functions """
-    assert all(callable(func) for func in f), 'multi_ops can only apply functions to the first argument'
-    for i in g:
-        if len(f) > 1:
-            yield tuple(func(i) for func in f)
-        elif len(f) == 1:
-            yield f[0](i)
+def multi_ops(data_stream, *funcs):
+    """ fork a generator with multiple operations/functions
+
+        data_stream  -  an iterable data structure (ie: list/generator/tuple)
+        funcs        -  every function that will be applied to the data_stream """
+
+    assert all(callable(func) for func in funcs), 'multi_ops can only apply functions to the first argument'
+    assert len(funcs), 'multi_ops needs at least one function to apply to data_stream'
+
+    for i in data_stream:
+        if len(funcs) > 1:
+            yield tuple(func(i) for func in funcs)
+        elif len(funcs) == 1:
+            yield funcs[0](i)
 
 ```
 

@@ -1,28 +1,42 @@
 # -*- coding: utf-8 -*-
 # @Author: ckochman
 # @Date:   2017-05-04 18:04:39
-# @Last Modified by:   ckochman
-# @Last Modified time: 2017-05-05 11:53:06
+# @Last Modified by:   Cody Kochmann
+# @Last Modified time: 2017-05-05 15:32:22
 
-def multi_ops(g, *f):
-    """ fork a generator with multiple operations/functions """
-    assert all(callable(func) for func in f), 'multi_ops can only apply functions to the first argument'
-    for i in g:
-        if len(f) > 1:
-            yield tuple(func(i) for func in f)
-        elif len(f) == 1:
-            yield f[0](i)
+def multi_ops(data_stream, *funcs):
+    """ fork a generator with multiple operations/functions
+
+        data_stream  -  an iterable data structure (ie: list/generator/tuple)
+        funcs        -  every function that will be applied to the data_stream """
+
+    assert all(callable(func) for func in funcs), 'multi_ops can only apply functions to the first argument'
+    assert len(funcs), 'multi_ops needs at least one function to apply to data_stream'
+
+    for i in data_stream:
+        if len(funcs) > 1:
+            yield tuple(func(i) for func in funcs)
+        elif len(funcs) == 1:
+            yield funcs[0](i)
 
 if __name__ == '__main__':
     # example usage below
-    tmp = [1,2,3,4,5]
+    def test_function(arg):
+        return arg+arg
+
+    gen = (i for i in range(10))
+
+    gen = (i*2 for i in gen)
+
     gen = multi_ops(
-        tmp,
+        gen,
         int,
         float,
         str,
-        repr,
-        bool
+        bool,
+        lambda i: i**2,
+        test_function
     )
+
     for i in gen:
         print(i)
