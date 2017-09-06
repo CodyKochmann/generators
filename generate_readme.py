@@ -2,7 +2,11 @@
 # @Author: ckochman
 # @Date:   2017-05-04 17:06:34
 # @Last Modified by:   Cody Kochmann
+<<<<<<< HEAD
 # @Last Modified time: 2017-05-05 16:35:44
+=======
+# @Last Modified time: 2017-05-05 16:34:43
+>>>>>>> d866e4b25ee49ad4636b3c6af646ed1ea51eea49
 
 from os import listdir
 from generators import read_file
