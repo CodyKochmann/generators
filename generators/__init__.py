@@ -21,11 +21,12 @@ sys.path.append(script_path())
 
 from average import average
 from counter import counter
+from fork import fork
+from itemgetter import itemgetter
+from multi_ops import multi_ops
 from read_file import read_file
 from started import started
-from total import total
 from timer import timer
-from fork import fork
+from total import total
 from unfork import unfork
-from multi_ops import multi_ops
 
