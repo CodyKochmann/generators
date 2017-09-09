@@ -210,10 +210,11 @@ def window(iterable, size):
         d.append(i)
         if len(d) == size:
             break
-    # yield the windows
-    for i in iterable:
+    if len(d) == d.maxlen:
+        # yield the windows
+        for i in iterable:
+            yield tuple(d)
+            d.append(i)
         yield tuple(d)
-        d.append(i)
-    yield tuple(d)
 ```
 

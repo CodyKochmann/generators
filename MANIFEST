@@ -3,6 +3,7 @@ setup.py
 generators/__init__.py
 generators/all_substrings.py
 generators/average.py
+generators/chain.py
 generators/chunks.py
 generators/counter.py
 generators/fork.py
