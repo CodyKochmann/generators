@@ -1,4 +1,4 @@
 ## My generator todo list.
 
-- Tee
+- Automate Testing
 - Zip 
