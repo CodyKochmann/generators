@@ -31,6 +31,20 @@ def average():
         count += 1
 ```
 
+### generators.chain
+```python
+def chain(*a):
+    """itertools.chain, just better"""
+    for g in a:
+        if hasattr(g, '__iter__'):
+            # iterate through if its iterable
+            for i in g:
+                yield i
+        else:
+            # just yield the whole thing if its not
+            yield g
+```
+
 ### generators.chunks
 ```python
 def chunks(iterable, chunk_size, output_type=tuple):

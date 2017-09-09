@@ -9,6 +9,7 @@ generators/fork.py
 generators/itemgetter.py
 generators/iter_kv.py
 generators/multi_ops.py
+generators/read.py
 generators/read_file.py
 generators/started.py
 generators/tee.py

@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(__file__))
 
 from all_substrings import all_substrings
 from average import average
+from chain import chain
 from chunks import chunks
 from counter import counter
 from fork import fork
@@ -23,4 +24,4 @@ from total import total
 from unfork import unfork
 from window import window
 
-__all__ = ['all_substrings', 'average', 'chunks', 'counter', 'fork', 'itemgetter', 'iter_kv', 'multi_ops', 'read', 'read_file', 'started', 'tee', 'timer', 'total', 'unfork', 'window']
+__all__ = ['all_substrings', 'average', 'chain', 'chunks', 'counter', 'fork', 'itemgetter', 'iter_kv', 'multi_ops', 'read', 'read_file', 'started', 'tee', 'timer', 'total', 'unfork', 'window']
