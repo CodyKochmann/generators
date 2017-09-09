@@ -8,7 +8,7 @@ Where all of my generator tricks are collected!
 pip install generators
 ```
 
-### all_substrings.py
+### generators.all_substrings
 ```python
 def all_substrings(s):
     ''' yields all substrings of a string '''
@@ -18,7 +18,7 @@ def all_substrings(s):
             yield join(sub)
 ```
 
-### average.py
+### generators.average
 ```python
 @started
 def average():
@@ -31,7 +31,7 @@ def average():
         count += 1
 ```
 
-### chunks.py
+### generators.chunks
 ```python
 def chunks(iterable, chunk_size, output_type=tuple):
     ''' returns chunks of an iterable '''
@@ -45,7 +45,7 @@ def chunks(iterable, chunk_size, output_type=tuple):
         yield output_type(chunk)
 ```
 
-### counter.py
+### generators.counter
 ```python
 @started
 def counter():
@@ -56,14 +56,14 @@ def counter():
         c += 1
 ```
 
-### fork.py
+### generators.fork
 ```python
 def fork(g,c=2):
     """ fork a generator in python """
     return ((i,)*c for i in g)
 ```
 
-### itemgetter.py
+### generators.itemgetter
 ```python
 def itemgetter(iterable, indexes):
     ''' same functionality as operator.itemgetter except, this one supports
@@ -87,7 +87,7 @@ def itemgetter(iterable, indexes):
     return itemgetter(*indexes)(out)
 ```
 
-### iter_kv.py
+### generators.iter_kv
 ```python
 def iter_kv(d):
     ''' does what dict.items() does, without wasting memory '''
@@ -95,7 +95,7 @@ def iter_kv(d):
         yield k, d[k]
 ```
 
-### multi_ops.py
+### generators.multi_ops
 ```python
 def multi_ops(data_stream, *funcs):
     """ fork a generator with multiple operations/functions
@@ -110,7 +110,7 @@ def multi_ops(data_stream, *funcs):
             yield funcs[0](i)
 ```
 
-### read.py
+### generators.read
 ```python
 def read(path, mode='r', record_size=None):
     ''' instead of writing open('file').read(), this is much more efficient '''
@@ -126,7 +126,7 @@ def read(path, mode='r', record_size=None):
     # close the file since we are using a context manager.
 ```
 
-### read_file.py
+### generators.read_file
 ```python
 def read_file(path):
     ''' reads a file into a line generator '''
@@ -135,7 +135,7 @@ def read_file(path):
             yield line
 ```
 
-### started.py
+### generators.started
 ```python
 def started(generator_function):
     """ starts a generator when created """
@@ -146,7 +146,7 @@ def started(generator_function):
     return wrapper
 ```
 
-### tee.py
+### generators.tee
 ```python
 def tee(pipeline, name, output_function=print):
     for i in pipeline:
@@ -154,7 +154,7 @@ def tee(pipeline, name, output_function=print):
         yield i
 ```
 
-### timer.py
+### generators.timer
 ```python
 @started
 def timer():
@@ -164,7 +164,7 @@ def timer():
         yield time()-start_time
 ```
 
-### total.py
+### generators.total
 ```python
 @started
 def total():
@@ -174,7 +174,7 @@ def total():
         total += yield total
 ```
 
-### unfork.py
+### generators.unfork
 ```python
 def unfork(g):
     """ returns a generator with one output at a time if
@@ -184,7 +184,7 @@ def unfork(g):
             yield x
 ```
 
-### window.py
+### generators.window
 ```python
 def window(iterable, size):
     ''' yields wondows of a given size '''

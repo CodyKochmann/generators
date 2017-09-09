@@ -44,7 +44,7 @@ gen = (((x for x in get_source(i)), i) for i in gen)
 with open('README.md', 'w') as readme:
     readme.write(readme_header + '\n')
     for f, path in gen:
-        readme.write('### ' + path.split('/')[1] + '\n```python\n')
+        readme.write('### generators.' + path.split('/')[1].replace('.py','') + '\n```python\n')
         readme.writelines(f)
         readme.write('```\n\n')
 
