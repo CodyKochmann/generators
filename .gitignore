@@ -1,1 +1,5 @@
+*/.hypothesis
+.hypothesis
 *.pyc
+*/.idea
+.idea
