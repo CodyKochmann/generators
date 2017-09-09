@@ -14,6 +14,7 @@ from fork import fork
 from itemgetter import itemgetter
 from iter_kv import iter_kv
 from multi_ops import multi_ops
+from read import read
 from read_file import read_file
 from started import started
 from tee import tee
@@ -22,4 +23,4 @@ from total import total
 from unfork import unfork
 from window import window
 
-__all__ = ['all_substrings', 'average', 'chunks', 'counter', 'fork', 'itemgetter', 'iter_kv', 'multi_ops', 'read_file', 'started', 'tee', 'timer', 'total', 'unfork', 'window']
+__all__ = ['all_substrings', 'average', 'chunks', 'counter', 'fork', 'itemgetter', 'iter_kv', 'multi_ops', 'read', 'read_file', 'started', 'tee', 'timer', 'total', 'unfork', 'window']

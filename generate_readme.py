@@ -10,6 +10,12 @@ from generators import read_file
 readme_header = """
 # Generators
 Where all of my generator tricks are collected!
+
+## How to install it?
+
+```
+pip install generators
+```
 """
 
 
