@@ -7,15 +7,22 @@
 from functools import partial
 
 
-def read(path, mode='r', record_size=None):
+def read(path, mode='r', record_size=None, offset=0):
     ''' instead of writing open('file').read(), this is much more efficient '''
     with open(path, mode) as f:
         if record_size is None:  # no record_size? iterate over lines
             for line in f:
-                yield line
+                if offset > 0:
+                    offset -= 1
+                else:
+                    yield line
         else:  # if record_size is specified, iterate over records at that size
             stop_value = b'' if mode == 'rb' else ''
+            f.seek(offset)
             for record in iter(partial(f.read, record_size), stop_value):
                 yield record
     # before this generator raises StopIteration, it will
     # close the file since we are using a context manager.
+
+if __name__ == '__main__':
+    print(list(read(__file__)))
