@@ -70,6 +70,23 @@ def counter():
         c += 1
 ```
 
+### generators.early_warning
+```python
+def early_warning(iterable):
+    nxt = None
+    prev = next(iterable)
+    while 1:
+        try:
+            nxt = next(iterable)
+        except:
+            warning('this generator is now empty')
+            yield prev
+            break
+        else:
+            yield prev
+            prev = nxt
+```
+
 ### generators.fork
 ```python
 def fork(g,c=2):
@@ -124,16 +141,34 @@ def multi_ops(data_stream, *funcs):
             yield funcs[0](i)
 ```
 
+### generators.print
+```python
+_print = print
+def print(*a):
+    try:
+        _print(*a)
+        if len(a) == 1:
+            return a[0]
+        else:
+            return a
+    except:
+        _print(*a)
+```
+
 ### generators.read
 ```python
-def read(path, mode='r', record_size=None):
+def read(path, mode='r', record_size=None, offset=0):
     ''' instead of writing open('file').read(), this is much more efficient '''
     with open(path, mode) as f:
         if record_size is None:  # no record_size? iterate over lines
             for line in f:
-                yield line
+                if offset > 0:
+                    offset -= 1
+                else:
+                    yield line
         else:  # if record_size is specified, iterate over records at that size
             stop_value = b'' if mode == 'rb' else ''
+            f.seek(offset)
             for record in iter(partial(f.read, record_size), stop_value):
                 yield record
     # before this generator raises StopIteration, it will
