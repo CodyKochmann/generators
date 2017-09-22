@@ -7,6 +7,9 @@ import os.path
 
 sys.path.append(os.path.dirname(__file__))
 
+del sys
+del os
+
 from all_substrings import all_substrings
 from average import average
 from chain import chain
