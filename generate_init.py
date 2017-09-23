@@ -13,6 +13,9 @@ import os.path
 
 sys.path.append(os.path.dirname(__file__))
 
+import inline_tools
+import performance_tools
+
 '''
 import sys
 import os.path
@@ -36,7 +39,7 @@ gen = (i for i in gen
 gen = (i[:-3] for i in gen)
 
 # serves as the all that will be injected into __init__
-__all__ = []
+__all__ = ['inline_tools', 'performance_tools']
 
 # rebuild the __init__
 with open(path_of('__init__.py'), 'w') as f:

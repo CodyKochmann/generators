@@ -12,3 +12,4 @@ del sys
 del os
 
 from print import print
+from asserts import asserts
