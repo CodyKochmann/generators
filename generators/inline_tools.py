@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-''' inline asserts for python one liner madness '''
-
+from __future__ import print_function
 from inspect import getsource
+
+__all__ = 'asserts', 'print'
+
+_print = print
 
 def asserts(input_args, rule, message=''):
     """ this function allows you to write asserts in generators since there are
@@ -21,18 +23,10 @@ def asserts(input_args, rule, message=''):
     assert rule(input_args), message
     return input_args
 
-
-if __name__ == '__main__':
-    # example code below
-
-    is_even = lambda i: not i%2
-    is_positive = lambda i: i > 0
-
-    l = list(range(20))
-
-    g = (i*3 for i in l)
-    g = (asserts(i, is_positive) for i in g)
-    g = (asserts(i, is_even) for i in g)
-
-    list(g)
-
+def print(*a):
+    """ print just one that returns what you give it instead of None """
+    try:
+        _print(*a)
+        return a[0] if len(a) == 1 else a
+    except:
+        _print(*a)

@@ -13,11 +13,8 @@ import os.path
 
 sys.path.append(os.path.dirname(__file__))
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'inline_tools'))
-sys.path.append(os.path.join(os.path.dirname(__file__), 'performance_tools'))
-
-import inline_tools
-import performance_tools
+del sys
+del os
 
 '''
 import sys
@@ -42,7 +39,8 @@ gen = (i for i in gen
 gen = (i[:-3] for i in gen)
 
 # serves as the all that will be injected into __init__
-__all__ = ['inline_tools', 'performance_tools']
+nested_tools = ['inline_tools', 'performance_tools']
+__all__ = []
 
 # rebuild the __init__
 with open(path_of('__init__.py'), 'w') as f:
@@ -52,6 +50,11 @@ with open(path_of('__init__.py'), 'w') as f:
         __all__.append(i)
         print('adding import for', i)
         f.write('from {i:} import {i:}\n'.format(i=i))
+    f.write('\n')
+    for i in nested_tools:
+        __all__.append(i)
+        print('adding nested import for', i)
+        f.write('import {}\n'.format(i))
     print('adding __all__')
     f.write('\n__all__ = {}\n'.format(__all__))
 

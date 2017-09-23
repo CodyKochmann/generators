@@ -7,11 +7,8 @@ import os.path
 
 sys.path.append(os.path.dirname(__file__))
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'inline_tools'))
-sys.path.append(os.path.join(os.path.dirname(__file__), 'performance_tools'))
-
-import inline_tools
-import performance_tools
+del sys
+del os
 
 from all_substrings import all_substrings
 from average import average
@@ -33,4 +30,7 @@ from total import total
 from unfork import unfork
 from window import window
 
-__all__ = ['inline_tools', 'performance_tools', 'all_substrings', 'average', 'chain', 'chunks', 'counter', 'early_warning', 'fork', 'itemgetter', 'iter_kv', 'map', 'multi_ops', 'read', 'read_file', 'started', 'tee', 'timer', 'total', 'unfork', 'window']
+import inline_tools
+import performance_tools
+
+__all__ = ['all_substrings', 'average', 'chain', 'chunks', 'counter', 'early_warning', 'fork', 'itemgetter', 'iter_kv', 'map', 'multi_ops', 'read', 'read_file', 'started', 'tee', 'timer', 'total', 'unfork', 'window', 'inline_tools', 'performance_tools']
