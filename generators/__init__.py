@@ -7,6 +7,9 @@ import os.path
 
 sys.path.append(os.path.dirname(__file__))
 
+sys.path.append(os.path.join(os.path.dirname(__file__), 'inline_tools'))
+sys.path.append(os.path.join(os.path.dirname(__file__), 'performance_tools'))
+
 import inline_tools
 import performance_tools
 

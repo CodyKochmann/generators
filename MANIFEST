@@ -10,8 +10,8 @@ generators/early_warning.py
 generators/fork.py
 generators/itemgetter.py
 generators/iter_kv.py
+generators/map.py
 generators/multi_ops.py
-generators/print.py
 generators/read.py
 generators/read_file.py
 generators/started.py
