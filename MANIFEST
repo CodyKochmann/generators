@@ -8,10 +8,12 @@ generators/chunks.py
 generators/counter.py
 generators/early_warning.py
 generators/fork.py
+generators/inline_tools.py
 generators/itemgetter.py
 generators/iter_kv.py
 generators/map.py
 generators/multi_ops.py
+generators/performance_tools.py
 generators/read.py
 generators/read_file.py
 generators/started.py
