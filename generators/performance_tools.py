@@ -3,6 +3,8 @@
 
 from __future__ import print_function
 
+__all__ = 'cpu_time', 'time_pipeline', 'runs_per_second'
+
 if hasattr(iter([]), 'next'): # only python2
 
     from functools import partial
@@ -99,6 +101,18 @@ def time_pipeline(iterable, *steps, iterations=100000):
             s = repr(steps[i]).strip()
         print('step {} | {:2.4f}% | {}'.format(i+1, ratios[i]*100, s))
 
+def runs_per_second(generator, seconds=3):
+    from timeit import default_timer as ts
+    c=0
+    start = ts()
+    end = start+seconds
+    for i in generator:
+        if ts()>end:
+            break
+        else:
+            c += 1
+    return int(c/seconds)
+
 
 if __name__ == '__main__':
     l = list(range(50))
@@ -113,3 +127,11 @@ if __name__ == '__main__':
                 yield i**2
 
     time_pipeline(l, f1, f2, f3, f3, f4)
+
+    def counter():
+        c = 0
+        while 1:
+            yield c
+            c+=1
+
+    print(runs_per_second(counter()))
