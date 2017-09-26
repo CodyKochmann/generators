@@ -24,7 +24,7 @@ def function_arg_count(fn):
     else:
         return 1 # not universal, but for now, enough... :/
 
-def map(*args, chunk=False):
+def map(chunk=False, *args):
     """ this map works just like the builtin.map, except, this one you can also:
         - give it multiple functions to map over an iterable
         - give it a single function with multiple arguments to run a window or
@@ -43,9 +43,9 @@ def map(*args, chunk=False):
     # check for native map usage
     if len(functions_to_apply) == 1 and len(iterables_to_run) >= 1 and map.function_arg_count(*functions_to_apply)==1:
         if hasattr(iter([]), '__next__'): # if python 3
-            return __builtins__.map(*functions_to_apply, *iterables_to_run)
+            return __builtins__.map(functions_to_apply[0], *iterables_to_run)
         else:
-            return iter(__builtins__.map(*functions_to_apply, *iterables_to_run))
+            return iter(__builtins__.map(functions_to_apply[0], *iterables_to_run))
     # ---------------------------- new logic below ----------------------------
     # logic for a single function
     elif len(functions_to_apply) == 1:
@@ -58,7 +58,7 @@ def map(*args, chunk=False):
                 return (fn(*i) for i in window(iterables_to_run[0], map.function_arg_count(functions_to_apply[0])))
     # logic for more than 1 function
     elif len(functions_to_apply) > 1 and len(iterables_to_run) == 1:
-        return multi_ops(*iterables_to_run, *functions_to_apply)
+        return multi_ops(*(iterables_to_run + functions_to_apply))
     else:
         raise ValueError('invalid usage of map()')
 

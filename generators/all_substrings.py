@@ -10,7 +10,7 @@ from window import window
 
 def all_substrings(s):
     ''' yields all substrings of a string '''
-    join = partial(''.join)
+    join = ''.join
     for i in range(1, len(s) + 1):
         for sub in window(s, i):
             yield join(sub)
