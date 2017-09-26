@@ -40,7 +40,7 @@ else: # only python3
     from time import process_time as cpu_time
 
 
-def time_pipeline(iterable, *steps, iterations=100000):
+def time_pipeline(iterable, *steps):
     ''' this times the steps in a pipeline.
         give it an iterable to test against
         followed by the steps of the pipeline
@@ -73,7 +73,7 @@ def time_pipeline(iterable, *steps, iterations=100000):
         #print('testing',current_tasks)
         duration = 0.0
         # run this test x number of times
-        for t in range(iterations):
+        for t in range(100000):
             # build the generator
             test_generator = iter(iterable()) if callable_base else iter(iterable)
             for task in current_tasks:
