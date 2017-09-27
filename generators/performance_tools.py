@@ -103,6 +103,21 @@ def time_pipeline(iterable, *steps):
 
 def runs_per_second(generator, seconds=3):
     from timeit import default_timer as ts
+
+    # if generator is a function, turn it into a generator for testing
+    if callable(generator) and not any(i in ('next', '__next__', '__iter__') for i in dir(generator)):
+        try:
+            output = generator()
+        except:
+            raise Exception('runs_per_second needs a working function that accepts no arguments')
+        else:
+            if output is None:
+                breakpoint = ''
+            else:
+                breakpoint = None
+            del output
+            generator = iter(generator, breakpoint)
+
     c=0
     start = ts()
     end = start+seconds
@@ -135,3 +150,10 @@ if __name__ == '__main__':
             c+=1
 
     print(runs_per_second(counter()))
+
+    print(runs_per_second(lambda: 1+2))
+
+    def fn():
+        return 'a' in 'hello'
+
+    print(runs_per_second(fn))
