@@ -24,11 +24,11 @@ def function_arg_count(fn):
     else:
         return 1 # not universal, but for now, enough... :/
 
-def map(chunk=False, *args):
+def map(*args):
     """ this map works just like the builtin.map, except, this one you can also:
         - give it multiple functions to map over an iterable
-        - give it a single function with multiple arguments to run a window or
-          a chunk based map operation over an iterable
+        - give it a single function with multiple arguments to run a window
+          based map operation over an iterable
     """
     #print(args)
 
@@ -52,10 +52,7 @@ def map(chunk=False, *args):
         fn = functions_to_apply[0]
         # if there is a single iterable, chop it up
         if len(iterables_to_run) == 1:
-            if chunk:
-                return (fn(*i) for i in chunks(iterables_to_run[0], map.function_arg_count(functions_to_apply[0])))
-            else:
-                return (fn(*i) for i in window(iterables_to_run[0], map.function_arg_count(functions_to_apply[0])))
+            return (fn(*i) for i in window(iterables_to_run[0], map.function_arg_count(functions_to_apply[0])))
     # logic for more than 1 function
     elif len(functions_to_apply) > 1 and len(iterables_to_run) == 1:
         return multi_ops(*(iterables_to_run + functions_to_apply))
@@ -79,6 +76,7 @@ if __name__ == '__main__':
         ''' prints a generator '''
         print('-'*30)
         print(list(generator))
+        print('-'*30)
 
     show(l)
 
@@ -87,5 +85,4 @@ if __name__ == '__main__':
     show(map(bool, l))
 
     show(map(lambda a,b:a+b, l))
-    show(map(lambda a,b:a+b, l, chunk=True))
 

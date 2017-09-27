@@ -12,7 +12,7 @@ pip install generators
 ```python
 def all_substrings(s):
     ''' yields all substrings of a string '''
-    join = partial(''.join)
+    join = ''.join
     for i in range(1, len(s) + 1):
         for sub in window(s, i):
             yield join(sub)
@@ -33,16 +33,23 @@ def average():
 
 ### generators.chain
 ```python
-def chain(*a):
+def chain(*args):
     """itertools.chain, just better"""
-    for g in a:
-        if hasattr(g, '__iter__'):
-            # iterate through if its iterable
-            for i in g:
+    has_iter = partial(hasattr, name='__iter__')
+    # check if a single iterable is being passed for
+    # the case that it's a generator of generators
+    if len(args) == 1 and hasattr(args[0], '__iter__'):
+        args = args[0]
+    for arg in args:
+        # if the arg is iterable
+        if hasattr(arg, '__iter__'):
+            # iterate through it
+            for i in arg:
                 yield i
+        # otherwise
         else:
-            # just yield the whole thing if its not
-            yield g
+            # yield the whole argument
+            yield arg
 ```
 
 ### generators.chunks
@@ -171,11 +178,11 @@ def function_arg_count(fn):
         return fn.__code__.co_argcount
     else:
         return 1 # not universal, but for now, enough... :/
-def map(*args, chunk=False):
+def map(*args):
     """ this map works just like the builtin.map, except, this one you can also:
         - give it multiple functions to map over an iterable
-        - give it a single function with multiple arguments to run a window or
-          a chunk based map operation over an iterable
+        - give it a single function with multiple arguments to run a window
+          based map operation over an iterable
     """
     #print(args)
     functions_to_apply = [i for i in args if callable(i)]
@@ -187,22 +194,19 @@ def map(*args, chunk=False):
     # check for native map usage
     if len(functions_to_apply) == 1 and len(iterables_to_run) >= 1 and map.function_arg_count(*functions_to_apply)==1:
         if hasattr(iter([]), '__next__'): # if python 3
-            return __builtins__.map(*functions_to_apply, *iterables_to_run)
+            return __builtins__.map(functions_to_apply[0], *iterables_to_run)
         else:
-            return iter(__builtins__.map(*functions_to_apply, *iterables_to_run))
+            return iter(__builtins__.map(functions_to_apply[0], *iterables_to_run))
     # ---------------------------- new logic below ----------------------------
     # logic for a single function
     elif len(functions_to_apply) == 1:
         fn = functions_to_apply[0]
         # if there is a single iterable, chop it up
         if len(iterables_to_run) == 1:
-            if chunk:
-                return (fn(*i) for i in chunks(iterables_to_run[0], map.function_arg_count(functions_to_apply[0])))
-            else:
-                return (fn(*i) for i in window(iterables_to_run[0], map.function_arg_count(functions_to_apply[0])))
+            return (fn(*i) for i in window(iterables_to_run[0], map.function_arg_count(functions_to_apply[0])))
     # logic for more than 1 function
     elif len(functions_to_apply) > 1 and len(iterables_to_run) == 1:
-        return multi_ops(*iterables_to_run, *functions_to_apply)
+        return multi_ops(*(iterables_to_run + functions_to_apply))
     else:
         raise ValueError('invalid usage of map()')
 map.function_arg_count = function_arg_count
@@ -250,7 +254,7 @@ if hasattr(iter([]), 'next'): # only python2
     del getrusage
     del RUSAGE_SELF
 else: # only python3
-def time_pipeline(iterable, *steps, iterations=100000):
+def time_pipeline(iterable, *steps):
     ''' this times the steps in a pipeline.
         give it an iterable to test against
         followed by the steps of the pipeline
@@ -282,7 +286,7 @@ def time_pipeline(iterable, *steps, iterations=100000):
         #print('testing',current_tasks)
         duration = 0.0
         # run this test x number of times
-        for t in range(iterations):
+        for t in range(100000):
             # build the generator
             test_generator = iter(iterable()) if callable_base else iter(iterable)
             for task in current_tasks:
@@ -366,6 +370,28 @@ def tee(pipeline, name, output_function=print):
     for i in pipeline:
         output_function('{} - {}'.format(name,i))
         yield i
+```
+
+### generators.timed_pipe
+```python
+def timed_pipe(generator, seconds=3):
+    ''' This is a time limited pipeline. If you have a infinite pipeline and
+        want it to stop yielding after a certain amount of time, use this! '''
+    # grab the highest precision timer
+    # when it started
+    start = ts()
+    # when it will stop
+    end = start + seconds
+    # iterate over the pipeline
+    for i in generator:
+        # if there is still time
+        if ts() < end:
+            # yield the next item
+            yield i
+        # otherwise
+        else:
+            # stop
+            break
 ```
 
 ### generators.timer
