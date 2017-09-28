@@ -67,20 +67,19 @@ def time_pipeline(iterable, *steps):
     # these store timestamps for time calculations
     durations = []
     results = []
-    for i in range(len(steps)):
-        i += 1
-        current_tasks = steps[:i]
+    for i,_ in enumerate(steps):
+        current_tasks = steps[:i+1]
         #print('testing',current_tasks)
         duration = 0.0
         # run this test x number of times
         for t in range(100000):
             # build the generator
             test_generator = iter(iterable()) if callable_base else iter(iterable)
-            for task in current_tasks:
+            for task in current_tasks[:-1]:
                 test_generator = task(test_generator)
             # time its execution
             start = ts()
-            for i in test_generator:
+            for i in current_tasks[-1](test_generator):
                 pass
             duration += ts() - start
         durations.append(duration)
@@ -91,7 +90,10 @@ def time_pipeline(iterable, *steps):
             results.append(durations[-1]-durations[-2])
             #print(durations[-1]-durations[-2],durations[-1])
     #print(results)
-    ratios = [i/sum(results) for i in results]
+    #print(durations)
+    assert sum(results) > 0
+    resultsum = sum(results)
+    ratios = [i/resultsum for i in results]
     #print(ratios)
     from inspect import getsource
     for i in range(len(ratios)):
@@ -99,7 +101,7 @@ def time_pipeline(iterable, *steps):
             s = getsource(steps[i]).splitlines()[0].strip()
         except:
             s = repr(steps[i]).strip()
-        print('step {} | {:2.4f}% | {}'.format(i+1, ratios[i]*100, s))
+        print('step {} | {:2.4f}s | {}'.format(i+1, durations[i], s))
 
 def runs_per_second(generator, seconds=3):
     from timeit import default_timer as ts
@@ -117,16 +119,53 @@ def runs_per_second(generator, seconds=3):
 if __name__ == '__main__':
     l = list(range(50))
 
-    f1=lambda iterable:(i*2 for i in iterable)
-    f2=lambda iterable:(i*3 for i in iterable)
-    f3=lambda iterable:(i*4 for i in iterable)
+    f1=lambda iterable:(i*2 for i in iterable if i>1)
+    f2=lambda iterable:(int(str(int(str(i*3)))) for i in iterable if i<6)
+    f3=lambda iterable:(i*4 for i in iterable if i%2)
+    f4=lambda iterable:sorted(i*4 for i in iterable)
 
-    def f4(iterable):
+    def f5(iterable):
         for i in iterable:
             if i%2:
                 yield i**2
 
-    time_pipeline(l, f1, f2, f3, f3, f4)
+    l =  (len(i) for i in open(__file__))
+
+    from random import choice, randint
+
+    l = [randint(0,50) for i in range(100)]
+
+    step1 = lambda iterable:(i for i in iterable if i%5==0)
+    step2 = lambda iterable:(i for i in iterable if i%8==3)
+    step3 = lambda iterable:((1.0*i)/50 for i in iterable)
+    step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
+
+    print('filter first')
+    time_pipeline(l, step1, step2, step3, step4)
+    print('process first')
+    time_pipeline(l, step3, step4, step1, step2)
+    print('filter, process, filter, process')
+    time_pipeline(l, step1, step3, step2, step4)
+
+    #time_pipeline(l, f1, f2, f3, f3, f4, f5)
+    #time_pipeline(l, *(choice([f1,f2,f3]) for i in range(10)))
+    """time_pipeline(
+                    l,
+                    f2,
+                    f3,
+                    f1,
+                    f3,
+                    f2,
+                    f3,
+                    f3,
+                    f3,
+                    f3,
+                    f3,
+                )"""
+
+
+
+
 
     def counter():
         c = 0
