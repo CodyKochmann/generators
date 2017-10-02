@@ -75,10 +75,10 @@ def time_pipeline(iterable, *steps):
         for t in range(100000):
             # build the generator
             test_generator = iter(iterable()) if callable_base else iter(iterable)
-            for task in current_tasks[:-1]:
-                test_generator = task(test_generator)
             # time its execution
             start = ts()
+            for task in current_tasks:
+                test_generator = task(test_generator)
             for i in current_tasks[-1](test_generator):
                 pass
             duration += ts() - start
@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
     step1 = lambda iterable:(i for i in iterable if i%5==0)
     step2 = lambda iterable:(i for i in iterable if i%8==3)
-    step3 = lambda iterable:((1.0*i)/50 for i in iterable)
+    step3 = lambda iterable:sorted((1.0*i)/50 for i in iterable)
     step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
 
     print('filter first')
