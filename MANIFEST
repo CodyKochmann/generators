@@ -18,6 +18,7 @@ generators/read.py
 generators/read_file.py
 generators/started.py
 generators/tee.py
+generators/timed_pipe.py
 generators/timer.py
 generators/total.py
 generators/unfork.py

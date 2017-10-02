@@ -25,6 +25,7 @@ from read import read
 from read_file import read_file
 from started import started
 from tee import tee
+from timed_pipe import timed_pipe
 from timer import timer
 from total import total
 from unfork import unfork
@@ -33,4 +34,4 @@ from window import window
 import inline_tools
 import performance_tools
 
-__all__ = ['all_substrings', 'average', 'chain', 'chunks', 'counter', 'early_warning', 'fork', 'itemgetter', 'iter_kv', 'map', 'multi_ops', 'read', 'read_file', 'started', 'tee', 'timer', 'total', 'unfork', 'window', 'inline_tools', 'performance_tools']
+__all__ = ['all_substrings', 'average', 'chain', 'chunks', 'counter', 'early_warning', 'fork', 'itemgetter', 'iter_kv', 'map', 'multi_ops', 'read', 'read_file', 'started', 'tee', 'timed_pipe', 'timer', 'total', 'unfork', 'window', 'inline_tools', 'performance_tools']
