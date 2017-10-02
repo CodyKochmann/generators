@@ -9,6 +9,7 @@ generators/counter.py
 generators/early_warning.py
 generators/fork.py
 generators/inline_tools.py
+generators/is_generator.py
 generators/itemgetter.py
 generators/iter_kv.py
 generators/map.py

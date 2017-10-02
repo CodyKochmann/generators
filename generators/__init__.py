@@ -19,6 +19,7 @@ from early_warning import early_warning
 from fork import fork
 from itemgetter import itemgetter
 from iter_kv import iter_kv
+from iterable import iterable
 from map import map
 from multi_ops import multi_ops
 from read import read
@@ -34,4 +35,4 @@ from window import window
 import inline_tools
 import performance_tools
 
-__all__ = ['all_substrings', 'average', 'chain', 'chunks', 'counter', 'early_warning', 'fork', 'itemgetter', 'iter_kv', 'map', 'multi_ops', 'read', 'read_file', 'started', 'tee', 'timed_pipe', 'timer', 'total', 'unfork', 'window', 'inline_tools', 'performance_tools']
+__all__ = ['all_substrings', 'average', 'chain', 'chunks', 'counter', 'early_warning', 'fork', 'itemgetter', 'iter_kv', 'iterable', 'map', 'multi_ops', 'read', 'read_file', 'started', 'tee', 'timed_pipe', 'timer', 'total', 'unfork', 'window', 'inline_tools', 'performance_tools']

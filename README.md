@@ -161,6 +161,20 @@ def iter_kv(d):
         yield k, d[k]
 ```
 
+### generators.iterable
+```python
+def iterable(target):
+    ''' returns true if the given argument is iterable '''
+    if any(i in ('next', '__next__', '__iter__') for i in dir(target)):
+        return True
+    else:
+        try:
+            iter(target)
+            return True
+        except:
+            return False
+```
+
 ### generators.map
 ```python
 """
@@ -280,20 +294,19 @@ def time_pipeline(iterable, *steps):
     # these store timestamps for time calculations
     durations = []
     results = []
-    for i in range(len(steps)):
-        i += 1
-        current_tasks = steps[:i]
+    for i,_ in enumerate(steps):
+        current_tasks = steps[:i+1]
         #print('testing',current_tasks)
         duration = 0.0
         # run this test x number of times
         for t in range(100000):
             # build the generator
             test_generator = iter(iterable()) if callable_base else iter(iterable)
-            for task in current_tasks:
-                test_generator = task(test_generator)
             # time its execution
             start = ts()
-            for i in test_generator:
+            for task in current_tasks:
+                test_generator = task(test_generator)
+            for i in current_tasks[-1](test_generator):
                 pass
             duration += ts() - start
         durations.append(duration)
@@ -304,15 +317,31 @@ def time_pipeline(iterable, *steps):
             results.append(durations[-1]-durations[-2])
             #print(durations[-1]-durations[-2],durations[-1])
     #print(results)
-    ratios = [i/sum(results) for i in results]
+    #print(durations)
+    assert sum(results) > 0
+    resultsum = sum(results)
+    ratios = [i/resultsum for i in results]
     #print(ratios)
     for i in range(len(ratios)):
         try:
             s = getsource(steps[i]).splitlines()[0].strip()
         except:
             s = repr(steps[i]).strip()
-        print('step {} | {:2.4f}% | {}'.format(i+1, ratios[i]*100, s))
+        print('step {} | {:2.4f}s | {}'.format(i+1, durations[i], s))
 def runs_per_second(generator, seconds=3):
+    # if generator is a function, turn it into a generator for testing
+    if callable(generator) and not any(i in ('next', '__next__', '__iter__') for i in dir(generator)):
+        try:
+            output = generator()
+        except:
+            raise Exception('runs_per_second needs a working function that accepts no arguments')
+        else:
+            if output is None:
+                breakpoint = ''
+            else:
+                breakpoint = None
+            del output
+            generator = iter(generator, breakpoint)
     c=0
     start = ts()
     end = start+seconds

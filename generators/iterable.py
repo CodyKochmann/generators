@@ -4,9 +4,9 @@
 # @Last Modified by:   Cody Kochmann
 # @Last Modified time: 2017-09-30 22:11:35
 
-def is_iterable(target):
+def iterable(target):
     ''' returns true if the given argument is iterable '''
-    if any(i in ('next', '__next__', '__iter__') for i in dir(target):
+    if any(i in ('next', '__next__', '__iter__') for i in dir(target)):
         return True
     else:
         try:
