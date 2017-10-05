@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+del print_function
 
 __all__ = 'cpu_time', 'time_pipeline', 'runs_per_second'
 

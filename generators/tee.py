@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # @Author: Cody Kochmann
 # @Date:   2017-05-05 16:25:49
-# @Last Modified by:   Cody Kochmann
+# @Last Modified 2017-10-05e>
 # @Last Modified time: 2017-05-05 16:33:53
 
 from __future__ import print_function
+del print_function
 
 def tee(pipeline, name, output_function=print):
     for i in pipeline:

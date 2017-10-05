@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+del print_function
+
 from inspect import getsource
 
 __all__ = 'asserts', 'print'

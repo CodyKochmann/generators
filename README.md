@@ -103,6 +103,7 @@ def fork(g,c=2):
 
 ### generators.inline_tools
 ```python
+del print_function
 __all__ = 'asserts', 'print'
 _print = print
 def asserts(input_args, rule, message=''):
@@ -156,7 +157,7 @@ def itemgetter(iterable, indexes):
 ### generators.iter_kv
 ```python
 def iter_kv(d):
-    ''' does what dict.items() does, without wasting memory '''
+    ''' iterate through massive dictionaries without the slowdown and memory usage of dict.items '''
     for k in d:
         yield k, d[k]
 ```
@@ -244,6 +245,7 @@ def multi_ops(data_stream, *funcs):
 
 ### generators.performance_tools
 ```python
+del print_function
 __all__ = 'cpu_time', 'time_pipeline', 'runs_per_second'
 if hasattr(iter([]), 'next'): # only python2
     def _cpu_time(rusage):
@@ -382,6 +384,25 @@ def read_file(path):
             yield line
 ```
 
+### generators.side_task
+```python
+del print_function
+sys.path.append(os.path.dirname(__file__))
+del sys
+del os
+def side_task(pipe, *side_jobs):
+    ''' allows you to run a function in a pipeline without affecting the data '''
+    # validate the input
+    assert iterable(pipe), 'side_task needs the first argument to be iterable'
+    for sj in side_jobs:
+        assert callable(sj), 'all side_jobs need to be functions, not {}'.format(sj)
+    # add a pass through function to side_jobs
+    side_jobs = (lambda i:i ,) + side_jobs
+    # run the pipeline
+    for i in map(pipe, *side_jobs):
+        yield i[0]
+```
+
 ### generators.started
 ```python
 def started(generator_function):
@@ -395,6 +416,7 @@ def started(generator_function):
 
 ### generators.tee
 ```python
+del print_function
 def tee(pipeline, name, output_function=print):
     for i in pipeline:
         output_function('{} - {}'.format(name,i))
