@@ -1,4 +1,10 @@
+
 ## My generator todo list.
 
 - Automate Testing
-- Zip
+
+## New tools to add 
+
+- `every_possible_object`
+- `infinite` or `just`
+- `time_needed`
