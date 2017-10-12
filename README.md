@@ -8,6 +8,24 @@ Where all of my generator tricks are collected!
 pip install generators
 ```
 
+### generators.all_subslices
+```python
+sys.path.append(os.path.dirname(__file__))
+del sys
+del os
+def all_subslices(itr):
+    """ generates every possible slice that can be generated from an iterable """
+    assert iterable(itr), 'generators.all_subslices only accepts iterable arguments, not {}'.format(itr)
+    if not hasattr(itr, '__len__'): # if this isnt materialized, make it a list
+        itr = list(itr)
+    len_itr = len(itr)
+    for start,_ in enumerate(itr):
+        d = deque()
+        for i in islice(itr, start, len_itr): # how many slices for this round
+            d.append(i)
+            yield tuple(d)
+```
+
 ### generators.all_substrings
 ```python
 def all_substrings(s):
@@ -174,6 +192,37 @@ def iterable(target):
             return True
         except:
             return False
+```
+
+### generators.just
+```python
+def just(*args):
+    ''' this works as an infinite loop that yields
+        the given argument(s) over and over
+    '''
+    assert len(args) >= 1, 'generators.just needs at least one arg'
+    if len(args) == 1: # if only one arg is given
+        try:
+            # try to cycle in a set for iteration speedup
+            return cycle(set(args))
+        except:
+            # revert to cycling args as a tuple
+            return cycle(args)
+    else:
+        return cycle({args})
+```
+
+### generators.loop
+```python
+def loop():
+    '''
+    use this for infinite iterations with
+        for _ in loop():
+    instead of:
+        while True:
+    to get a free speedup in loops.
+    '''
+    return cycle({0})
 ```
 
 ### generators.map
@@ -382,6 +431,14 @@ def read_file(path):
     with open(path) as f:
         for line in f:
             yield line
+```
+
+### generators.rps
+```python
+""" this behaves as a shortcut for the rps function in performance_tools """
+sys.path.append(os.path.dirname(__file__))
+del sys
+del os
 ```
 
 ### generators.side_task
