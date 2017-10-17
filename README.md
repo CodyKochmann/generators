@@ -72,14 +72,24 @@ def chain(*args):
 
 ### generators.chunks
 ```python
-def chunks(iterable, chunk_size, output_type=tuple):
-    ''' returns chunks of an iterable '''
-    chunk = deque(maxlen=chunk_size)
-    for i in iterable:
-        chunk.append(i)
-        if len(chunk) == chunk_size:
-            yield output_type(chunk)
-            chunk.clear()
+def chunks(stream, chunk_size, output_type=tuple):
+    ''' returns chunks of a stream '''
+    if callable(chunk_size):
+        ''' chunk_size is acting as a separator function '''
+        seperator = chunk_size
+        chunk = deque()
+        for i in stream:
+            if seperator(i) and len(chunk):
+                yield output_type(chunk)
+                chunk.clear()
+            chunk.append(i)
+    else:
+        chunk = deque(maxlen=chunk_size)
+        for i in stream:
+            chunk.append(i)
+            if len(chunk) == chunk_size:
+                yield output_type(chunk)
+                chunk.clear()
     if len(chunk):
         yield output_type(chunk)
 ```
