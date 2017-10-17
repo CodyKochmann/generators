@@ -32,3 +32,11 @@ def print(*a):
         return a[0] if len(a) == 1 else a
     except:
         _print(*a)
+
+def attempt(fn, default_output=None):
+    ''' attempt running a function in a try block without raising exceptions '''
+    assert callable(fn), 'generators.inline_tools.attempt needs fn to be a callable function'
+    try:
+        return fn()
+    except:
+        return default_output

@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 # @Author: Cody Kochmann
 # @Date:   2017-09-09 11:55:03
-# @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2017-09-09 12:37:35
+# @Last Modified 2017-10-17e>
+# @Last Modified time: 2017-10-17 15:01:25
 
 from functools import partial
+from sys import stdin
 
-
-def read(path, mode='r', record_size=None, offset=0):
+def read(path='', mode='r', record_size=None, offset=0):
     ''' instead of writing open('file').read(), this is much more efficient '''
+    if path=='': # if path is empty
+        for line in stdin:
+            yield line
     with open(path, mode) as f:
         if record_size is None:  # no record_size? iterate over lines
             for line in f:
