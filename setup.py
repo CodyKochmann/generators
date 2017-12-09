@@ -3,6 +3,7 @@ from distutils.core import setup
 setup(
   name = 'generators',
   packages = ['generators'], # this must be the same as the name above
+  install_requires = ["strict_functions", "future"],
   version = '2017.10.17.2',
   description = 'collection of helpful generators that should have been in itertools',
   author = 'Cody Kochmann',

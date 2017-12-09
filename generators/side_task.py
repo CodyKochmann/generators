@@ -2,7 +2,7 @@
 # @Author: ckochman
 # @Date:   2017-10-05 16:47:30
 # @Last Modified 2017-10-05
-# @Last Modified time: 2017-09-09 09:55:16
+# @Last Modified time: 2017-12-09 13:21:35
 
 from __future__ import print_function
 del print_function
@@ -18,6 +18,9 @@ del os
 from iterable import iterable
 from map import map
 
+from strict_functions import strict_globals
+
+@strict_globals(map=map, iterable=iterable)
 def side_task(pipe, *side_jobs):
     ''' allows you to run a function in a pipeline without affecting the data '''
     # validate the input
@@ -29,6 +32,8 @@ def side_task(pipe, *side_jobs):
     # run the pipeline
     for i in map(pipe, *side_jobs):
         yield i[0]
+
+del iterable, strict_globals
 
 if __name__ == '__main__':
     from time import time as ts

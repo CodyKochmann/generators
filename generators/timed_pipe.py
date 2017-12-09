@@ -2,13 +2,16 @@
 # @Author: Cody Kochmann
 # @Date:   2017-09-27 08:32:14
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2017-09-27 08:42:30
+# @Last Modified time: 2017-12-09 13:26:13
 
+from strict_functions import strict_globals
+from timeit import default_timer as ts
+
+@strict_globals(ts=ts)
 def timed_pipe(generator, seconds=3):
     ''' This is a time limited pipeline. If you have a infinite pipeline and
         want it to stop yielding after a certain amount of time, use this! '''
     # grab the highest precision timer
-    from timeit import default_timer as ts
     # when it started
     start = ts()
     # when it will stop
@@ -23,6 +26,8 @@ def timed_pipe(generator, seconds=3):
         else:
             # stop
             break
+
+del ts, strict_globals
 
 if __name__ == '__main__':
     from generators import counter

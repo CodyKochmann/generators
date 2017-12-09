@@ -4,6 +4,11 @@
 from __future__ import print_function
 del print_function
 
+from inspect import getsource
+from timeit import default_timer as ts
+
+from strict_functions import noglobals, strict_globals
+
 __all__ = 'cpu_time', 'time_pipeline', 'runs_per_second'
 
 if hasattr(iter([]), 'next'): # only python2
@@ -31,16 +36,14 @@ if hasattr(iter([]), 'next'): # only python2
     cpu_time = partial(_cpu_time, partial(getrusage, RUSAGE_SELF))
 
     # clean up the namespace
-    del _cpu_time
-    del partial
-    del getrusage
-    del RUSAGE_SELF
+    del _cpu_time, partial, getrusage, RUSAGE_SELF
 
 else: # only python3
 
     from time import process_time as cpu_time
 
 
+@strict_globals(ts=ts, getsource=getsource)
 def time_pipeline(iterable, *steps):
     ''' this times the steps in a pipeline.
         give it an iterable to test against
@@ -63,8 +66,6 @@ def time_pipeline(iterable, *steps):
     # into a list so it can be ran over multiple times
     if not callable_base:
         iterable = tuple(iterable)
-    # this is used for timestamps
-    from timeit import default_timer as ts
     # these store timestamps for time calculations
     durations = []
     results = []
@@ -96,7 +97,6 @@ def time_pipeline(iterable, *steps):
     resultsum = sum(results)
     ratios = [i/resultsum for i in results]
     #print(ratios)
-    from inspect import getsource
     for i in range(len(ratios)):
         try:
             s = getsource(steps[i]).splitlines()[0].strip()
@@ -104,35 +104,52 @@ def time_pipeline(iterable, *steps):
             s = repr(steps[i]).strip()
         print('step {} | {:2.4f}s | {}'.format(i+1, durations[i], s))
 
-def runs_per_second(generator, seconds=3):
-    from timeit import default_timer as ts
 
+@strict_globals(ts=ts)
+def runs_per_second(generator, seconds=3):
+    ''' use this function as a profiler for both functions and generators
+    to see how many iterations or cycles they can run per second '''
+    assert type(seconds) is int, 'runs_per_second needs seconds to be an int, not {}'.format(repr(seconds))
+    assert seconds>0, 'runs_per_second needs seconds to be positive, not {}'.format(repr(seconds))
     # if generator is a function, turn it into a generator for testing
     if callable(generator) and not any(i in ('next', '__next__', '__iter__') for i in dir(generator)):
         try:
+            # get the output of the function
             output = generator()
         except:
+            # if the function crashes without any arguments
             raise Exception('runs_per_second needs a working function that accepts no arguments')
         else:
-            if output is None:
-                breakpoint = ''
-            else:
-                breakpoint = None
+            # this usage of iter infinitely calls a function until the second argument is the output
+            # so I set the second argument to something that isnt what output was.
+            generator = iter(generator, (1 if output is None else None))
             del output
-            generator = iter(generator, breakpoint)
-
-    c=0
+    c=0  # run counter, keep this one short for performance reasons
+    entire_test_time_used = False
     start = ts()
     end = start+seconds
-    for i in generator:
+    for _ in generator:
         if ts()>end:
+            entire_test_time_used = True
             break
         else:
             c += 1
-    return int(c/seconds)
+    duration = (ts())-start  # the ( ) around ts ensures that it will be the first thing calculated
+    return int(c/(seconds if entire_test_time_used else duration))
+
+
+del getsource, noglobals, strict_globals
 
 
 if __name__ == '__main__':
+    print(runs_per_second(lambda:1+2))
+    print(runs_per_second(lambda:1-2))
+    print(runs_per_second(lambda:1/2))
+    print(runs_per_second(lambda:1*2))
+    print(runs_per_second(lambda:1**2))
+
+    print(runs_per_second((i for i in range(2000))))
+
     l = list(range(50))
 
     f1=lambda iterable:(i*2 for i in iterable if i>1)

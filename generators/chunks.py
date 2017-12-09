@@ -5,8 +5,10 @@
 # @Last Modified 2017-10-17
 
 from collections import deque
+from strict_functions import strict_globals
 
 
+@strict_globals(deque=deque)
 def chunks(stream, chunk_size, output_type=tuple):
     ''' returns chunks of a stream '''
     if callable(chunk_size):
@@ -28,6 +30,8 @@ def chunks(stream, chunk_size, output_type=tuple):
     if len(chunk):
         yield output_type(chunk)
 
+del deque
+del strict_globals
 
 if __name__ == '__main__':
     l = list(range(30))

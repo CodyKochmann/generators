@@ -5,8 +5,9 @@
 # @Last Modified by:   Cody Kochmann
 
 from collections import deque
+from strict_functions import strict_globals
 
-
+@strict_globals(deque=deque)
 def window(iterable, size):
     ''' yields wondows of a given size '''
     d = deque(maxlen=size)
@@ -23,3 +24,10 @@ def window(iterable, size):
             yield tuple(d)
             d.append(i)
         yield tuple(d)
+
+del deque, strict_globals
+
+if __name__ == '__main__':
+    g = window(range(20), 3)
+    for i in g:
+        print(i)

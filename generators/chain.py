@@ -2,10 +2,12 @@
 # @Author: Cody Kochmann
 # @Date:   2017-09-09 14:58:43
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2017-09-27 08:31:10
+# @Last Modified time: 2017-12-09 10:27:36
 
 from functools import partial
+from strict_functions import strict_globals
 
+@strict_globals(partial=partial)
 def chain(*args):
     """itertools.chain, just better"""
     has_iter = partial(hasattr, name='__iter__')
@@ -24,6 +26,9 @@ def chain(*args):
         else:
             # yield the whole argument
             yield arg
+
+del partial
+del strict_globals
 
 if __name__ == '__main__':
     import itertools as itr

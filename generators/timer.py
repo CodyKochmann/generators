@@ -1,18 +1,23 @@
 # -*- coding: utf-8 -*-
 # @Author: ckochman
 # @Date:   2017-05-04 16:48:03
-# @Last Modified by:   ckochman
-# @Last Modified time: 2017-05-05 11:35:52
+# @Last Modified by:   Cody Kochmann
+# @Last Modified time: 2017-12-09 13:29:27
 
 from started import started
-from time import time
+from timeit import default_timer as ts
+from strict_functions import strict_globals
+
 
 @started
+@strict_globals(ts=ts)
 def timer():
     """ generator that tracks time """
-    start_time = time()
+    start_time = ts()
     while 1:
-        yield time()-start_time
+        yield ts()-start_time
+
+del ts, started, strict_globals
 
 if __name__ == '__main__':
     # some example usage

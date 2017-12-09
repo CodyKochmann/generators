@@ -2,7 +2,7 @@
 # @Author: Cody Kochmann
 # @Date:   2017-09-09 10:02:28
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2017-09-09 10:36:07
+# @Last Modified time: 2017-12-09 13:35:31
 
 header = '''#!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -16,6 +16,7 @@ sys.path.append(os.path.dirname(__file__))
 del sys
 del os
 
+from performance_tools import runs_per_second as rps
 '''
 import sys
 import os.path

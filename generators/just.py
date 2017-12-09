@@ -2,10 +2,12 @@
 # @Author: Cody Kochmann
 # @Date:   2017-10-12 11:28:15
 # @Last Modified 2017-10-12
-# @Last Modified time: 2017-10-12 11:35:30
+# @Last Modified time: 2017-12-09 11:23:23
 
 from itertools import cycle
+from strict_functions import strict_globals
 
+@strict_globals(cycle=cycle)
 def just(*args):
     ''' this works as an infinite loop that yields
         the given argument(s) over and over
@@ -21,6 +23,8 @@ def just(*args):
             return cycle(args)
     else:
         return cycle({args})
+
+del cycle, strict_globals
 
 if __name__ == '__main__':
     g = just(5)

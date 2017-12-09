@@ -5,7 +5,7 @@
 
 from os import listdir
 from os.path import isfile
-from generators import read_file
+from generators import read
 
 readme_header = """
 # Generators
@@ -21,7 +21,7 @@ pip install generators
 
 def get_source(path):
     ''' yields all non-empty lines in a file '''
-    for line in read_file(path):
+    for line in read(path):
         if 'import' in line or len(line.strip()) == 0 or line.startswith('#'):
             continue
         if '__name__' in line and '__main__' in line:

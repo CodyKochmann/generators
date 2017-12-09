@@ -2,8 +2,11 @@
 # @Author: ckochman
 # @Date:   2017-05-04 18:04:39
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2017-05-05 15:32:22
+# @Last Modified time: 2017-12-09 11:30:26
 
+from strict_functions import noglobals
+
+@noglobals
 def multi_ops(data_stream, *funcs):
     """ fork a generator with multiple operations/functions
 
@@ -18,6 +21,8 @@ def multi_ops(data_stream, *funcs):
             yield tuple(func(i) for func in funcs)
         elif len(funcs) == 1:
             yield funcs[0](i)
+
+del noglobals
 
 if __name__ == '__main__':
     # example usage below

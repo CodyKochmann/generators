@@ -1,6 +1,8 @@
 from collections import deque
 from operator import itemgetter
+from strict_functions import strict_globals
 
+@strict_globals(deque=deque, itemgetter=itemgetter)
 def itemgetter(iterable, indexes):
     ''' same functionality as operator.itemgetter except, this one supports
         both positive and negative indexing of generators as well '''
@@ -21,3 +23,9 @@ def itemgetter(iterable, indexes):
         # if just positive results
         out.update({i:x for i,x in enumerate(iterable) if i in positive_indexes})
     return itemgetter(*indexes)(out)
+
+del deque, strict_globals
+
+if __name__ == '__main__':
+    print(itemgetter(range(20), (-2, 2, 4, 6, -5, -10, -1)))
+
