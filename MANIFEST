@@ -11,6 +11,7 @@ generators/early_warning.py
 generators/fork.py
 generators/inline_tools.py
 generators/itemgetter.py
+generators/iter_csv.py
 generators/iter_kv.py
 generators/iterable.py
 generators/just.py
@@ -19,8 +20,6 @@ generators/map.py
 generators/multi_ops.py
 generators/performance_tools.py
 generators/read.py
-generators/read_file.py
-generators/rps.py
 generators/side_task.py
 generators/started.py
 generators/tee.py
