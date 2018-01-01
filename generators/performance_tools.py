@@ -109,7 +109,7 @@ def time_pipeline(iterable, *steps):
 def runs_per_second(generator, seconds=3):
     ''' use this function as a profiler for both functions and generators
     to see how many iterations or cycles they can run per second '''
-    assert type(seconds) is int, 'runs_per_second needs seconds to be an int, not {}'.format(repr(seconds))
+    assert isinstance(seconds, int), 'runs_per_second needs seconds to be an int, not {}'.format(repr(seconds))
     assert seconds>0, 'runs_per_second needs seconds to be positive, not {}'.format(repr(seconds))
     # if generator is a function, turn it into a generator for testing
     if callable(generator) and not any(i in ('next', '__next__', '__iter__') for i in dir(generator)):
