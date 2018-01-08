@@ -17,10 +17,6 @@ if hasattr(iter([]), 'next'): # only python2
     from resource import getrusage, RUSAGE_SELF
 
     def _cpu_time(rusage):
-        ''' just like python3's time.process_time :
-
-            Process time for profiling: sum of the kernel and user-space CPU time.
-        '''
         usage = rusage()
         return usage.ru_utime + usage.ru_stime
 
@@ -35,6 +31,10 @@ if hasattr(iter([]), 'next'): # only python2
     #
     cpu_time = partial(_cpu_time, partial(getrusage, RUSAGE_SELF))
 
+    cpu_time.__doc__ = '''
+    Returns the process time for profiling (sum of the kernel and user-space CPU time)
+    '''
+
     # clean up the namespace
     del _cpu_time, partial, getrusage, RUSAGE_SELF
 
@@ -43,13 +43,49 @@ else: # only python3
     from time import process_time as cpu_time
 
 
+
 @strict_globals(ts=ts, getsource=getsource)
 def time_pipeline(iterable, *steps):
-    ''' this times the steps in a pipeline.
-        give it an iterable to test against
-        followed by the steps of the pipeline
-        seperated in individual functions.
     '''
+This times the steps in a pipeline. Give it an iterable to test against
+followed by the steps of the pipeline seperated in individual functions.
+
+Example Usage:
+```
+    from random import choice, randint
+
+    l = [randint(0,50) for i in range(100)]
+
+    step1 = lambda iterable:(i for i in iterable if i%5==0)
+    step2 = lambda iterable:(i for i in iterable if i%8==3)
+    step3 = lambda iterable:sorted((1.0*i)/50 for i in iterable)
+    step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
+
+    print('filter first')
+    time_pipeline(l, step1, step2, step3, step4)
+    print('process first')
+    time_pipeline(l, step3, step4, step1, step2)
+    print('filter, process, filter, process')
+    time_pipeline(l, step1, step3, step2, step4)
+``` 
+
+Outputs:
+    filter first
+    step 1 | 2.0427s | step1 = lambda iterable:(i for i in iterable if i%5==0)
+    step 2 | 2.0510s | step2 = lambda iterable:(i for i in iterable if i%8==3)
+    step 3 | 2.4839s | step3 = lambda iterable:sorted((1.0*i)/50 for i in iterable)
+    step 4 | 2.8446s | step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
+    process first
+    step 1 | 7.5291s | step3 = lambda iterable:sorted((1.0*i)/50 for i in iterable)
+    step 2 | 20.6732s | step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
+    step 3 | 16.8470s | step1 = lambda iterable:(i for i in iterable if i%5==0)
+    step 4 | 16.8269s | step2 = lambda iterable:(i for i in iterable if i%8==3)
+    filter, process, filter, process
+    step 1 | 2.0528s | step1 = lambda iterable:(i for i in iterable if i%5==0)
+    step 2 | 3.3039s | step3 = lambda iterable:sorted((1.0*i)/50 for i in iterable)
+    step 3 | 3.1385s | step2 = lambda iterable:(i for i in iterable if i%8==3)
+    step 4 | 3.1489s | step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
+'''
     if callable(iterable):
         try:
             iter(iterable())
@@ -107,8 +143,40 @@ def time_pipeline(iterable, *steps):
 
 @strict_globals(ts=ts)
 def runs_per_second(generator, seconds=3):
-    ''' use this function as a profiler for both functions and generators
-    to see how many iterations or cycles they can run per second '''
+    ''' 
+use this function as a profiler for both functions and generators
+to see how many iterations or cycles they can run per second 
+
+Example usage for timing simple operations/functions:
+
+``` 
+    print(runs_per_second(lambda:1+2))
+    # 2074558
+    print(runs_per_second(lambda:1-2))
+    # 2048523
+    print(runs_per_second(lambda:1/2))
+    # 2075186
+    print(runs_per_second(lambda:1*2))
+    # 2101722
+    print(runs_per_second(lambda:1**2))
+    # 2104572
+```
+
+Example usage for timing iteration speed of generators:
+  
+``` 
+    def counter():
+        c = 0
+        while 1:
+            yield c
+            c+=1
+
+    print(runs_per_second(counter()))
+    # 1697328
+    print(runs_per_second((i for i in range(2000))))
+    # 1591301
+``` 
+'''
     assert isinstance(seconds, int), 'runs_per_second needs seconds to be an int, not {}'.format(repr(seconds))
     assert seconds>0, 'runs_per_second needs seconds to be positive, not {}'.format(repr(seconds))
     # if generator is a function, turn it into a generator for testing
@@ -142,14 +210,32 @@ del getsource, noglobals, strict_globals
 
 
 if __name__ == '__main__':
+  
+    # for timing simple operations
     print(runs_per_second(lambda:1+2))
+    # 2074558
     print(runs_per_second(lambda:1-2))
+    # 2048523
     print(runs_per_second(lambda:1/2))
+    # 2075186
     print(runs_per_second(lambda:1*2))
+    # 2101722
     print(runs_per_second(lambda:1**2))
+    # 2104572
+    
+    # for timing iteration speed of generators
+    
+    def counter():
+        c = 0
+        while 1:
+            yield c
+            c+=1
 
+    print(runs_per_second(counter()))
+    # 1697328
     print(runs_per_second((i for i in range(2000))))
-
+    # 1591301
+    
     l = list(range(50))
 
     f1=lambda iterable:(i*2 for i in iterable if i>1)
@@ -180,34 +266,7 @@ if __name__ == '__main__':
     print('filter, process, filter, process')
     time_pipeline(l, step1, step3, step2, step4)
 
-    #time_pipeline(l, f1, f2, f3, f3, f4, f5)
-    #time_pipeline(l, *(choice([f1,f2,f3]) for i in range(10)))
-    """time_pipeline(
-                    l,
-                    f2,
-                    f3,
-                    f1,
-                    f3,
-                    f2,
-                    f3,
-                    f3,
-                    f3,
-                    f3,
-                    f3,
-                )"""
-
-
-
-
-
-    def counter():
-        c = 0
-        while 1:
-            yield c
-            c+=1
-
-    print(runs_per_second(counter()))
-
+    
     print(runs_per_second(lambda: 1+2))
 
     def fn():
