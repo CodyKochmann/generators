@@ -5,6 +5,7 @@ generators/all_subslices.py
 generators/all_substrings.py
 generators/average.py
 generators/chain.py
+generators/chunk_on.py
 generators/chunks.py
 generators/counter.py
 generators/early_warning.py
