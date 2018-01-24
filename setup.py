@@ -5,7 +5,7 @@ setup(
   name = 'generators',
   packages = ['generators'], # this must be the same as the name above
   install_requires = (["strict_functions", "future"] if sys.version_info < (3,0) else ["strict_functions"]),
-  version = '2018.1.1',
+  version = '2018.1.24',
   description = 'collection of helpful generators that should have been in itertools',
   author = 'Cody Kochmann',
   author_email = 'kochmanncody@gmail.com',
