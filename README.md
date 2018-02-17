@@ -20,6 +20,49 @@ def iter_kv(d):
 del noglobals
 ```
 
+### generators.sub_stream_split
+```python
+def stream_split(pipe, splitter, skip_empty=False):
+    ''' this function works a lot like groupby but splits on given patterns,
+        the same behavior as str.split provides. if skip_empty is True,
+        stream_split only yields pieces that have contents
+        Example:
+            splitting 1011101010101
+            by        10
+            returns   ,11,,,,1
+        Or if skip_empty is True
+            splitting 1011101010101
+            by        10
+            returns   11,1
+    '''
+    splitter = tuple(splitter)
+    len_splitter = len(splitter)
+    pipe=iter(pipe)
+    current = deque()
+    tmp = []
+    windowed = window(pipe, len(splitter))
+    for i in windowed:
+        if i == splitter:
+            skip(windowed, len(splitter)-1)
+            yield list(current)
+            current.clear()
+            tmp = []
+        else:
+            current.append(i[0])
+            tmp = i
+    if len(current) or len(tmp):
+        yield list(chain(current,tmp))
+```
+
+### generators.skip_last
+```python
+def skip_last(pipe, how_many=1):
+    pipe = iter(pipe)
+    d = deque(islice(pipe, how_many), maxlen=how_many+1)
+    for _ in map(d.append, pipe):
+        yield d.popleft()
+```
+
 ### generators.tee
 ```python
 del print_function
@@ -96,26 +139,40 @@ def itemgetter(iterable, indexes):
 del deque, strict_globals
 ```
 
+### generators.every_other
+```python
+def every_other(pipe, how_many=1):
+    ''' feeding this function a pipe yields every other (or how ever many)
+        objects you want at a time.
+    '''
+    for i,x in zip(pipe, cycle(repeater([True,False], how_many))):
+        if x:
+            yield i
+```
+
 ### generators.window
 ```python
-@strict_globals(deque=deque)
-def window(iterable, size):
+@strict_globals(deque=deque, islice=islice)
+def window(iterable, size=2):
     ''' yields wondows of a given size '''
-    d = deque(maxlen=size)
-    # normalize iterable into a generator
-    iterable = (i for i in iterable)
-    # fill d until full
-    for i in iterable:
-        d.append(i)
-        if len(d) == size:
-            break
-    if len(d) == d.maxlen:
-        # yield the windows
-        for i in iterable:
-            yield tuple(d)
-            d.append(i)
+    iterable = iter(iterable)
+    d = deque(islice(iterable, size-1), maxlen=size)
+    for _ in map(d.append, iterable):
         yield tuple(d)
-del deque, strict_globals
+del deque, islice, strict_globals
+```
+
+### generators.skip
+```python
+def skip(pipe, how_many=1):
+    ''' this is a helper function that allows you to skip x number of items
+        in a pipe. its basically the same is running next() on a generator
+        multiple times to move down the generator's stream.
+        The return value is the pipe that has now skipped x number of steps
+    '''
+    for _ in islice(pipe, how_many):
+        pass
+    return pipe
 ```
 
 ### generators.inline_tools
@@ -244,6 +301,18 @@ def side_task(pipe, *side_jobs):
 del iterable, strict_globals
 ```
 
+### generators.skip_first
+```python
+def skip_first(pipe, items=1):
+    ''' this is an alias for skip to parallel the dedicated skip_last function
+        to provide a little more readability to the code. the action of actually
+        skipping does not occur until the first iteration is done
+    '''
+    pipe = iter(pipe)
+    for i in skip(pipe, items):
+        yield i
+```
+
 ### generators.timed_pipe
 ```python
 @strict_globals(ts=ts)
@@ -355,9 +424,6 @@ del print_function
 __all__ = 'cpu_time', 'time_pipeline', 'runs_per_second'
 if hasattr(iter([]), 'next'): # only python2
     def _cpu_time(rusage):
-        ''' just like python3's time.process_time :
-            Process time for profiling: sum of the kernel and user-space CPU time.
-        '''
         usage = rusage()
         return usage.ru_utime + usage.ru_stime
     # i used a nested partial because access to the arguments is
@@ -370,16 +436,48 @@ if hasattr(iter([]), 'next'): # only python2
     #   _cpu_time(getrusage(RUSAGE_SELF))
     #
     cpu_time = partial(_cpu_time, partial(getrusage, RUSAGE_SELF))
+    cpu_time.__doc__ = '''
+    Returns the process time for profiling (sum of the kernel and user-space CPU time)
+    '''
     # clean up the namespace
     del _cpu_time, partial, getrusage, RUSAGE_SELF
 else: # only python3
 @strict_globals(ts=ts, getsource=getsource)
 def time_pipeline(iterable, *steps):
-    ''' this times the steps in a pipeline.
-        give it an iterable to test against
-        followed by the steps of the pipeline
-        seperated in individual functions.
     '''
+This times the steps in a pipeline. Give it an iterable to test against
+followed by the steps of the pipeline seperated in individual functions.
+Example Usage:
+```
+    l = [randint(0,50) for i in range(100)]
+    step1 = lambda iterable:(i for i in iterable if i%5==0)
+    step2 = lambda iterable:(i for i in iterable if i%8==3)
+    step3 = lambda iterable:sorted((1.0*i)/50 for i in iterable)
+    step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
+    print('filter first')
+    time_pipeline(l, step1, step2, step3, step4)
+    print('process first')
+    time_pipeline(l, step3, step4, step1, step2)
+    print('filter, process, filter, process')
+    time_pipeline(l, step1, step3, step2, step4)
+``` 
+Outputs:
+    filter first
+    step 1 | 2.0427s | step1 = lambda iterable:(i for i in iterable if i%5==0)
+    step 2 | 2.0510s | step2 = lambda iterable:(i for i in iterable if i%8==3)
+    step 3 | 2.4839s | step3 = lambda iterable:sorted((1.0*i)/50 for i in iterable)
+    step 4 | 2.8446s | step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
+    process first
+    step 1 | 7.5291s | step3 = lambda iterable:sorted((1.0*i)/50 for i in iterable)
+    step 2 | 20.6732s | step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
+    step 3 | 16.8470s | step1 = lambda iterable:(i for i in iterable if i%5==0)
+    step 4 | 16.8269s | step2 = lambda iterable:(i for i in iterable if i%8==3)
+    filter, process, filter, process
+    step 1 | 2.0528s | step1 = lambda iterable:(i for i in iterable if i%5==0)
+    step 2 | 3.3039s | step3 = lambda iterable:sorted((1.0*i)/50 for i in iterable)
+    step 3 | 3.1385s | step2 = lambda iterable:(i for i in iterable if i%8==3)
+    step 4 | 3.1489s | step4 = lambda iterable:(float(float(float(float(i*3)))) for i in iterable)
+'''
     if callable(iterable):
         try:
             iter(iterable())
@@ -435,9 +533,36 @@ def time_pipeline(iterable, *steps):
         print('step {} | {:2.4f}s | {}'.format(i+1, durations[i], s))
 @strict_globals(ts=ts)
 def runs_per_second(generator, seconds=3):
-    ''' use this function as a profiler for both functions and generators
-    to see how many iterations or cycles they can run per second '''
-    assert type(seconds) is int, 'runs_per_second needs seconds to be an int, not {}'.format(repr(seconds))
+    ''' 
+use this function as a profiler for both functions and generators
+to see how many iterations or cycles they can run per second 
+Example usage for timing simple operations/functions:
+``` 
+    print(runs_per_second(lambda:1+2))
+    # 2074558
+    print(runs_per_second(lambda:1-2))
+    # 2048523
+    print(runs_per_second(lambda:1/2))
+    # 2075186
+    print(runs_per_second(lambda:1*2))
+    # 2101722
+    print(runs_per_second(lambda:1**2))
+    # 2104572
+```
+Example usage for timing iteration speed of generators:
+``` 
+    def counter():
+        c = 0
+        while 1:
+            yield c
+            c+=1
+    print(runs_per_second(counter()))
+    # 1697328
+    print(runs_per_second((i for i in range(2000))))
+    # 1591301
+``` 
+'''
+    assert isinstance(seconds, int), 'runs_per_second needs seconds to be an int, not {}'.format(repr(seconds))
     assert seconds>0, 'runs_per_second needs seconds to be positive, not {}'.format(repr(seconds))
     # if generator is a function, turn it into a generator for testing
     if callable(generator) and not any(i in ('next', '__next__', '__iter__') for i in dir(generator)):
@@ -465,6 +590,47 @@ def runs_per_second(generator, seconds=3):
     duration = (ts())-start  # the ( ) around ts ensures that it will be the first thing calculated
     return int(c/(seconds if entire_test_time_used else duration))
 del getsource, noglobals, strict_globals
+```
+
+### generators.first
+```python
+def first(pipe, items=1):
+    ''' first is essentially the next() function except it's second argument
+        determines how many of the first items you want. If items is more than
+        1 the output is an islice of the generator. If items is 1, the first
+        item is returned
+    '''
+    pipe = iter(pipe)
+    return next(pipe) if items == 1 else islice(pipe, 0, items)
+```
+
+### generators.last
+```python
+def last(pipe, items=1):
+    ''' this function simply returns the last item in an iterable '''
+    if items == 1:
+        tmp=None
+        for i in pipe:
+            tmp=i
+        return tmp
+    else:
+        return tuple(deque(pipe, maxlen=items))
+```
+
+### generators.chunk_on
+```python
+@noglobals
+def chunk_on(pipeline, new_chunk_signal):
+    ''' split the stream into seperate chunks based on a new chunk signal '''
+    out = []
+    for i in pipeline:
+        if new_chunk_signal(i) and len(out): # if new chunk start detected
+            yield out
+            out = []
+        out.append(i)
+    # after looping, if there is anything in out, yield that too
+    if len(out):
+        yield out
 ```
 
 ### generators.loop
@@ -516,6 +682,16 @@ def started(generator_function):
 del strict_globals, wraps
 ```
 
+### generators.repeater
+```python
+def repeater(pipe, how_many=2):
+    ''' this function repeats each value in the pipeline however many times you need '''
+    r = range(how_many)
+    for i in pipe:
+        for _ in r:
+            yield i
+```
+
 ### generators.average
 ```python
 @started
@@ -543,6 +719,21 @@ def unfork(g):
         for x in i:
             yield x
 del noglobals
+```
+
+### generators.remember
+```python
+@started
+def remember():
+    ''' this coroutine remembers one thing for you and acts as a read-once method
+        of transportation for code. This makes obcessive cleanup of variables a
+        lot easier.
+    '''
+    a = None
+    b = None
+    for _ in loop():
+        b = yield b
+        a = yield a
 ```
 
 ### generators.iter_csv
@@ -594,6 +785,13 @@ def chunks(stream, chunk_size, output_type=tuple):
         yield output_type(chunk)
 del deque
 del strict_globals
+```
+
+### generators.consume
+```python
+def consume(pipe, how_many=0):
+    for _ in (pipe if how_many==0 else islice(pipe, 0, how_many)):
+        pass
 ```
 
 ### generators.early_warning

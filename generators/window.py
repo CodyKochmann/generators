@@ -11,9 +11,8 @@ from strict_functions import strict_globals
 @strict_globals(deque=deque, islice=islice)
 def window(iterable, size=2):
     ''' yields wondows of a given size '''
-    if not (hasattr(iterable, 'next') or hasattr(iterable, '__next__')):
-        iterable = iter(iterable)
-    d = deque(islice(iterable, 0, size), maxlen=size)
+    iterable = iter(iterable)
+    d = deque(islice(iterable, size-1), maxlen=size)
     for _ in map(d.append, iterable):
         yield tuple(d)
 
