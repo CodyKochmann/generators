@@ -20,40 +20,6 @@ def iter_kv(d):
 del noglobals
 ```
 
-### generators.sub_stream_split
-```python
-def stream_split(pipe, splitter, skip_empty=False):
-    ''' this function works a lot like groupby but splits on given patterns,
-        the same behavior as str.split provides. if skip_empty is True,
-        stream_split only yields pieces that have contents
-        Example:
-            splitting 1011101010101
-            by        10
-            returns   ,11,,,,1
-        Or if skip_empty is True
-            splitting 1011101010101
-            by        10
-            returns   11,1
-    '''
-    splitter = tuple(splitter)
-    len_splitter = len(splitter)
-    pipe=iter(pipe)
-    current = deque()
-    tmp = []
-    windowed = window(pipe, len(splitter))
-    for i in windowed:
-        if i == splitter:
-            skip(windowed, len(splitter)-1)
-            yield list(current)
-            current.clear()
-            tmp = []
-        else:
-            current.append(i[0])
-            tmp = i
-    if len(current) or len(tmp):
-        yield list(chain(current,tmp))
-```
-
 ### generators.skip_last
 ```python
 def skip_last(pipe, how_many=1):
@@ -666,6 +632,40 @@ def just(*args):
     else:
         return cycle({args})
 del cycle, strict_globals
+```
+
+### generators.stream_split
+```python
+def stream_split(pipe, splitter, skip_empty=False):
+    ''' this function works a lot like groupby but splits on given patterns,
+        the same behavior as str.split provides. if skip_empty is True,
+        stream_split only yields pieces that have contents
+        Example:
+            splitting 1011101010101
+            by        10
+            returns   ,11,,,,1
+        Or if skip_empty is True
+            splitting 1011101010101
+            by        10
+            returns   11,1
+    '''
+    splitter = tuple(splitter)
+    len_splitter = len(splitter)
+    pipe=iter(pipe)
+    current = deque()
+    tmp = []
+    windowed = window(pipe, len(splitter))
+    for i in windowed:
+        if i == splitter:
+            skip(windowed, len(splitter)-1)
+            yield list(current)
+            current.clear()
+            tmp = []
+        else:
+            current.append(i[0])
+            tmp = i
+    if len(current) or len(tmp):
+        yield list(chain(current,tmp))
 ```
 
 ### generators.started

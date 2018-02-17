@@ -2,9 +2,8 @@
 # @Author: Cody Kochmann
 # @Date:   2018-02-17 10:41:19
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2018-02-17 12:50:54
+# @Last Modified time: 2018-02-17 15:04:27
 
-from itertools import islice, takewhile
 from collections import deque
 from skip import skip
 from window import window

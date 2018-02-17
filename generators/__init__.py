@@ -35,6 +35,7 @@ from last import last
 from chunk_on import chunk_on
 from loop import loop
 from just import just
+from stream_split import stream_split
 from started import started
 from repeater import repeater
 from average import average
@@ -50,4 +51,4 @@ from read import read
 import inline_tools
 import performance_tools
 
-__all__ = ['iter_kv', 'skip_last', 'tee', 'all_subslices', 'iterable', 'itemgetter', 'every_other', 'window', 'skip', 'chain', 'all_substrings', 'timer', 'fork', 'side_task', 'skip_first', 'timed_pipe', 'map', 'total', 'multi_ops', 'first', 'last', 'chunk_on', 'loop', 'just', 'started', 'repeater', 'average', 'unfork', 'remember', 'iter_csv', 'counter', 'chunks', 'consume', 'early_warning', 'read', 'inline_tools', 'performance_tools']
+__all__ = ['iter_kv', 'skip_last', 'tee', 'all_subslices', 'iterable', 'itemgetter', 'every_other', 'window', 'skip', 'chain', 'all_substrings', 'timer', 'fork', 'side_task', 'skip_first', 'timed_pipe', 'map', 'total', 'multi_ops', 'first', 'last', 'chunk_on', 'loop', 'just', 'stream_split', 'started', 'repeater', 'average', 'unfork', 'remember', 'iter_csv', 'counter', 'chunks', 'consume', 'early_warning', 'read', 'inline_tools', 'performance_tools']
