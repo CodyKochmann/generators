@@ -27,6 +27,7 @@ from fork import fork
 from side_task import side_task
 from skip_first import skip_first
 from timed_pipe import timed_pipe
+from uniq import uniq
 from map import map
 from total import total
 from multi_ops import multi_ops
@@ -51,4 +52,4 @@ from read import read
 import inline_tools
 import performance_tools
 
-__all__ = ['iter_kv', 'skip_last', 'tee', 'all_subslices', 'iterable', 'itemgetter', 'every_other', 'window', 'skip', 'chain', 'all_substrings', 'timer', 'fork', 'side_task', 'skip_first', 'timed_pipe', 'map', 'total', 'multi_ops', 'first', 'last', 'chunk_on', 'loop', 'just', 'stream_split', 'started', 'repeater', 'average', 'unfork', 'remember', 'iter_csv', 'counter', 'chunks', 'consume', 'early_warning', 'read', 'inline_tools', 'performance_tools']
+__all__ = ['iter_kv', 'skip_last', 'tee', 'all_subslices', 'iterable', 'itemgetter', 'every_other', 'window', 'skip', 'chain', 'all_substrings', 'timer', 'fork', 'side_task', 'skip_first', 'timed_pipe', 'uniq', 'map', 'total', 'multi_ops', 'first', 'last', 'chunk_on', 'loop', 'just', 'stream_split', 'started', 'repeater', 'average', 'unfork', 'remember', 'iter_csv', 'counter', 'chunks', 'consume', 'early_warning', 'read', 'inline_tools', 'performance_tools']
