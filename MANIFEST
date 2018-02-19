@@ -38,4 +38,5 @@ generators/timed_pipe.py
 generators/timer.py
 generators/total.py
 generators/unfork.py
+generators/uniq.py
 generators/window.py
