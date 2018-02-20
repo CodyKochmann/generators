@@ -8,38 +8,6 @@ Where all of my generator tricks are collected!
 pip install generators
 ```
 
-### generators.iter_kv
-```python
-@noglobals
-def iter_kv(d):
-    ''' This iterates through massive dictionaries without the slowdown and memory usage of
-    dict.items. Python 3 does provide an iterable dict.items but using this instead gives you
-    uniform behavior in both versions of python '''
-    for k in d:
-        yield k, d[k]
-del noglobals
-```
-
-### generators.skip_last
-```python
-def skip_last(pipe, how_many=1):
-    pipe = iter(pipe)
-    d = deque(islice(pipe, how_many), maxlen=how_many+1)
-    for _ in map(d.append, pipe):
-        yield d.popleft()
-```
-
-### generators.tee
-```python
-del print_function
-@noglobals
-def tee(pipeline, name, output_function=print):
-    for i in pipeline:
-        output_function('{} - {}'.format(name,i))
-        yield i
-del noglobals
-```
-
 ### generators.all_subslices
 ```python
 sys.path.append(os.path.dirname(__file__))
@@ -63,46 +31,162 @@ del deque
 del strict_globals
 ```
 
-### generators.iterable
+### generators.all_substrings
+```python
+@strict_globals(window=window)
+def all_substrings(s):
+    ''' yields all substrings of a string '''
+    join = ''.join
+    for i in range(1, len(s) + 1):
+        for sub in window(s, i):
+            yield join(sub)
+del window
+del strict_globals
+```
+
+### generators.alternator
+```python
+def alternator(*pipes):
+    ''' a lot like zip, just instead of:
+            (a,b),(a,b),(a,b)
+        it works more like:
+            a,b,a,b,a,b,a
+        until one of the pipes ends '''
+    try:
+        for p in cycle(map(iter, pipes)):
+            yield next(p)
+    except StopIteration:
+        pass
+```
+
+### generators.average
+```python
+@started
+@strict_globals(total=total)
+def average():
+    """ generator that holds a rolling average """
+    count = 0
+    total = total()
+    i=0
+    while 1:
+        i = yield ((total.send(i)*1.0)/count if count else 0)
+        count += 1
+del total
+del started
+del strict_globals
+```
+
+### generators.chain
+```python
+@strict_globals(partial=partial)
+def chain(*args):
+    """itertools.chain, just better"""
+    has_iter = partial(hasattr, name='__iter__')
+    # check if a single iterable is being passed for
+    # the case that it's a generator of generators
+    if len(args) == 1 and hasattr(args[0], '__iter__'):
+        args = args[0]
+    for arg in args:
+        # if the arg is iterable
+        if hasattr(arg, '__iter__'):
+            # iterate through it
+            for i in arg:
+                yield i
+        # otherwise
+        else:
+            # yield the whole argument
+            yield arg
+del partial
+del strict_globals
+```
+
+### generators.chunk_on
 ```python
 @noglobals
-def iterable(target):
-    ''' returns true if the given argument is iterable '''
-    if any(i in ('next', '__next__', '__iter__') for i in dir(target)):
-        return True
+def chunk_on(pipeline, new_chunk_signal):
+    ''' split the stream into seperate chunks based on a new chunk signal '''
+    out = []
+    for i in pipeline:
+        if new_chunk_signal(i) and len(out): # if new chunk start detected
+            yield out
+            out = []
+        out.append(i)
+    # after looping, if there is anything in out, yield that too
+    if len(out):
+        yield out
+```
+
+### generators.chunks
+```python
+@strict_globals(deque=deque)
+def chunks(stream, chunk_size, output_type=tuple):
+    ''' returns chunks of a stream '''
+    if callable(chunk_size):
+        ''' chunk_size is acting as a separator function '''
+        seperator = chunk_size
+        chunk = deque()
+        for i in stream:
+            if seperator(i) and len(chunk):
+                yield output_type(chunk)
+                chunk.clear()
+            chunk.append(i)
     else:
-        try:
-            iter(target)
-            return True
-        except:
-            return False
+        chunk = deque(maxlen=chunk_size)
+        for i in stream:
+            chunk.append(i)
+            if len(chunk) == chunk_size:
+                yield output_type(chunk)
+                chunk.clear()
+    if len(chunk):
+        yield output_type(chunk)
+del deque
+del strict_globals
+```
+
+### generators.consume
+```python
+def consume(pipe, how_many=0):
+    for _ in (pipe if how_many==0 else islice(pipe, 0, how_many)):
+        pass
+```
+
+### generators.counter
+```python
+@started
+@noglobals
+def counter():
+    "generator that holds a sum"
+    c = 0
+    while 1:
+        yield c
+        c += 1
+del started
 del noglobals
 ```
 
-### generators.itemgetter
+### generators.early_warning
 ```python
-@strict_globals(deque=deque, itemgetter=itemgetter)
-def itemgetter(iterable, indexes):
-    ''' same functionality as operator.itemgetter except, this one supports
-        both positive and negative indexing of generators as well '''
-    assert type(indexes)==tuple, 'indexes needs to be a tuple of ints'
-    assert all(type(i)==int for i in indexes), 'indexes needs to be a tuple of ints'
-    positive_indexes=[i for i in indexes if i>=0]
-    negative_indexes=[i for i in indexes if i<0]
-    out = {}
-    if len(negative_indexes):
-        # if there are any negative indexes
-        negative_index_buffer = deque(maxlen=min(indexes)*-1)
-        for i,x in enumerate(iterable):
-            if i in positive_indexes:
-                out[i]=x
-            negative_index_buffer.append(i)
-        out.update({ni:negative_index_buffer[ni] for ni in negative_indexes})
-    else:
-        # if just positive results
-        out.update({i:x for i,x in enumerate(iterable) if i in positive_indexes})
-    return itemgetter(*indexes)(out)
-del deque, strict_globals
+@strict_globals(warning=warning)
+def early_warning(iterable, name='this generator'):
+    ''' This function logs an early warning that the generator is empty.
+    This is handy for times when you're manually playing with generators and
+    would appreciate the console warning you ahead of time that your generator
+    is now empty, instead of being surprised with a StopIteration or
+    GeneratorExit exception when youre trying to test something. '''
+    nxt = None
+    prev = next(iterable)
+    while 1:
+        try:
+            nxt = next(iterable)
+        except:
+            warning(' {} is now empty'.format(name))
+            yield prev
+            break
+        else:
+            yield prev
+            prev = nxt
+del warning
+del strict_globals
 ```
 
 ### generators.every_other
@@ -116,29 +200,25 @@ def every_other(pipe, how_many=1):
             yield i
 ```
 
-### generators.window
+### generators.first
 ```python
-@strict_globals(deque=deque, islice=islice)
-def window(iterable, size=2):
-    ''' yields wondows of a given size '''
-    iterable = iter(iterable)
-    d = deque(islice(iterable, size-1), maxlen=size)
-    for _ in map(d.append, iterable):
-        yield tuple(d)
-del deque, islice, strict_globals
+def first(pipe, items=1):
+    ''' first is essentially the next() function except it's second argument
+        determines how many of the first items you want. If items is more than
+        1 the output is an islice of the generator. If items is 1, the first
+        item is returned
+    '''
+    pipe = iter(pipe)
+    return next(pipe) if items == 1 else islice(pipe, 0, items)
 ```
 
-### generators.skip
+### generators.fork
 ```python
-def skip(pipe, how_many=1):
-    ''' this is a helper function that allows you to skip x number of items
-        in a pipe. its basically the same is running next() on a generator
-        multiple times to move down the generator's stream.
-        The return value is the pipe that has now skipped x number of steps
-    '''
-    for _ in islice(pipe, how_many):
-        pass
-    return pipe
+@noglobals
+def fork(iterate, forks=2):
+    """ use this to fork a generator """
+    return ((i,)*forks for i in iterate)
+del noglobals
 ```
 
 ### generators.inline_tools
@@ -188,133 +268,116 @@ def attempt(fn, default_output=None):
 del strict_globals, noglobals
 ```
 
-### generators.chain
+### generators.itemgetter
 ```python
-@strict_globals(partial=partial)
-def chain(*args):
-    """itertools.chain, just better"""
-    has_iter = partial(hasattr, name='__iter__')
-    # check if a single iterable is being passed for
-    # the case that it's a generator of generators
-    if len(args) == 1 and hasattr(args[0], '__iter__'):
-        args = args[0]
-    for arg in args:
-        # if the arg is iterable
-        if hasattr(arg, '__iter__'):
-            # iterate through it
-            for i in arg:
-                yield i
-        # otherwise
-        else:
-            # yield the whole argument
-            yield arg
-del partial
-del strict_globals
+@strict_globals(deque=deque, itemgetter=itemgetter)
+def itemgetter(iterable, indexes):
+    ''' same functionality as operator.itemgetter except, this one supports
+        both positive and negative indexing of generators as well '''
+    assert type(indexes)==tuple, 'indexes needs to be a tuple of ints'
+    assert all(type(i)==int for i in indexes), 'indexes needs to be a tuple of ints'
+    positive_indexes=[i for i in indexes if i>=0]
+    negative_indexes=[i for i in indexes if i<0]
+    out = {}
+    if len(negative_indexes):
+        # if there are any negative indexes
+        negative_index_buffer = deque(maxlen=min(indexes)*-1)
+        for i,x in enumerate(iterable):
+            if i in positive_indexes:
+                out[i]=x
+            negative_index_buffer.append(i)
+        out.update({ni:negative_index_buffer[ni] for ni in negative_indexes})
+    else:
+        # if just positive results
+        out.update({i:x for i,x in enumerate(iterable) if i in positive_indexes})
+    return itemgetter(*indexes)(out)
+del deque, strict_globals
 ```
 
-### generators.all_substrings
+### generators.iter_csv
 ```python
-@strict_globals(window=window)
-def all_substrings(s):
-    ''' yields all substrings of a string '''
-    join = ''.join
-    for i in range(1, len(s) + 1):
-        for sub in window(s, i):
-            yield join(sub)
-del window
-del strict_globals
+@strict_globals(DictReader=DictReader)
+def iter_csv(path, mode='r'):
+    with open(path, mode) as f:
+        for row in DictReader(f):
+            yield dict(row)
+del DictReader, strict_globals
 ```
 
-### generators.timer
-```python
-@started
-@strict_globals(ts=ts)
-def timer():
-    """ generator that tracks time """
-    start_time = ts()
-    while 1:
-        yield ts()-start_time
-del ts, started, strict_globals
-```
-
-### generators.fork
+### generators.iter_kv
 ```python
 @noglobals
-def fork(iterate, forks=2):
-    """ use this to fork a generator """
-    return ((i,)*forks for i in iterate)
+def iter_kv(d):
+    ''' This iterates through massive dictionaries without the slowdown and memory usage of
+    dict.items. Python 3 does provide an iterable dict.items but using this instead gives you
+    uniform behavior in both versions of python '''
+    for k in d:
+        yield k, d[k]
 del noglobals
 ```
 
-### generators.side_task
+### generators.iterable
 ```python
-del print_function
-sys.path.append(os.path.dirname(__file__))
-del sys
-del os
-@strict_globals(map=map, iterable=iterable)
-def side_task(pipe, *side_jobs):
-    ''' allows you to run a function in a pipeline without affecting the data '''
-    # validate the input
-    assert iterable(pipe), 'side_task needs the first argument to be iterable'
-    for sj in side_jobs:
-        assert callable(sj), 'all side_jobs need to be functions, not {}'.format(sj)
-    # add a pass through function to side_jobs
-    side_jobs = (lambda i:i ,) + side_jobs
-    # run the pipeline
-    for i in map(pipe, *side_jobs):
-        yield i[0]
-del iterable, strict_globals
+@noglobals
+def iterable(target):
+    ''' returns true if the given argument is iterable '''
+    if any(i in ('next', '__next__', '__iter__') for i in dir(target)):
+        return True
+    else:
+        try:
+            iter(target)
+            return True
+        except:
+            return False
+del noglobals
 ```
 
-### generators.skip_first
+### generators.just
 ```python
-def skip_first(pipe, items=1):
-    ''' this is an alias for skip to parallel the dedicated skip_last function
-        to provide a little more readability to the code. the action of actually
-        skipping does not occur until the first iteration is done
+@strict_globals(cycle=cycle)
+def just(*args):
+    ''' this works as an infinite loop that yields
+        the given argument(s) over and over
     '''
-    pipe = iter(pipe)
-    for i in skip(pipe, items):
-        yield i
+    assert len(args) >= 1, 'generators.just needs at least one arg'
+    if len(args) == 1: # if only one arg is given
+        try:
+            # try to cycle in a set for iteration speedup
+            return cycle(set(args))
+        except:
+            # revert to cycling args as a tuple
+            return cycle(args)
+    else:
+        return cycle({args})
+del cycle, strict_globals
 ```
 
-### generators.timed_pipe
+### generators.last
 ```python
-@strict_globals(ts=ts)
-def timed_pipe(generator, seconds=3):
-    ''' This is a time limited pipeline. If you have a infinite pipeline and
-        want it to stop yielding after a certain amount of time, use this! '''
-    # grab the highest precision timer
-    # when it started
-    start = ts()
-    # when it will stop
-    end = start + seconds
-    # iterate over the pipeline
-    for i in generator:
-        # if there is still time
-        if ts() < end:
-            # yield the next item
-            yield i
-        # otherwise
-        else:
-            # stop
-            break
-del ts, strict_globals
+def last(pipe, items=1):
+    ''' this function simply returns the last item in an iterable '''
+    if items == 1:
+        tmp=None
+        for i in pipe:
+            tmp=i
+        return tmp
+    else:
+        return tuple(deque(pipe, maxlen=items))
 ```
 
-### generators.uniq
+### generators.loop
 ```python
-def uniq(pipe):
-    ''' this works like bash's uniq command where the generator only iterates
-        if the next value is not the previous '''
-    pipe = iter(pipe)
-    previous = next(pipe)
-    yield previous
-    for i in pipe:
-        if i is not previous:
-            previous = i
-            yield i
+@strict_globals(cycle=cycle)
+def loop():
+    '''
+    use this for infinite iterations with
+        for _ in loop():
+    instead of:
+        while True:
+    to get a free speedup in loops.
+    '''
+    return cycle({0})
+del cycle, strict_globals
 ```
 
 ### generators.map
@@ -369,18 +432,6 @@ def map(*args):
 del function_arg_count, window, multi_ops, noglobals, strict_globals
 ```
 
-### generators.total
-```python
-@started
-@noglobals
-def total():
-    "generator that holds a total"
-    total = 0
-    while 1:
-        total += yield total
-del started, noglobals
-```
-
 ### generators.multi_ops
 ```python
 @noglobals
@@ -396,6 +447,61 @@ def multi_ops(data_stream, *funcs):
         elif len(funcs) == 1:
             yield funcs[0](i)
 del noglobals
+```
+
+### generators.peekable
+```python
+class PeekableIterator(object):
+    ''' Wrapping a generator with this provides a 
+        peek() function that lets you see whats coming 
+        on the next iteration. If the wrapped 
+        generator is done, calling peek() will return:
+            <class 'StopIteration'>
+        so you can control flow without needing to
+        write code that relies on raised exceptions.
+    '''
+    def __init__(self, pipe):
+        self.pipe=iter(pipe)
+        self.preview=None
+        self.steps=-2
+        self._started=False
+        self._next=partial(
+            next, 
+            self.pipe, 
+            StopIteration
+        )
+    def peek(self):
+        return self.preview
+    def _first_step(self):
+        self._started=True
+        # Since self.preview is returned in _step
+        # _step needs to be ran twice the first time.
+        #
+        # This is not done in __init__ because 
+        # iterators are lazy and do not manipulate
+        # input pipes until their first iteration.
+        self._step() 
+        return self._step()
+    def _step(self, _input=None):
+        self.steps+=1
+        if self._started:
+            prev = self.preview
+            self.preview = self._next()
+            return prev
+        else:
+            self._first_step()
+    __next__, next, send = _step, _step, _step
+    def __iter__(self):
+        return iter(self._step, StopIteration)
+    def __str__(self):
+        return '<PeekableIterator steps={} next={}>'.format(*((
+            self.steps, repr(self.preview)
+        ) if self._started else (
+            0, 'NotStarted'
+        )))
+    __repr__=__str__
+def peekable(pipe):
+    return PeekableIterator(pipe)
 ```
 
 ### generators.performance_tools
@@ -572,267 +678,6 @@ Example usage for timing iteration speed of generators:
 del getsource, noglobals, strict_globals
 ```
 
-### generators.first
-```python
-def first(pipe, items=1):
-    ''' first is essentially the next() function except it's second argument
-        determines how many of the first items you want. If items is more than
-        1 the output is an islice of the generator. If items is 1, the first
-        item is returned
-    '''
-    pipe = iter(pipe)
-    return next(pipe) if items == 1 else islice(pipe, 0, items)
-```
-
-### generators.last
-```python
-def last(pipe, items=1):
-    ''' this function simply returns the last item in an iterable '''
-    if items == 1:
-        tmp=None
-        for i in pipe:
-            tmp=i
-        return tmp
-    else:
-        return tuple(deque(pipe, maxlen=items))
-```
-
-### generators.chunk_on
-```python
-@noglobals
-def chunk_on(pipeline, new_chunk_signal):
-    ''' split the stream into seperate chunks based on a new chunk signal '''
-    out = []
-    for i in pipeline:
-        if new_chunk_signal(i) and len(out): # if new chunk start detected
-            yield out
-            out = []
-        out.append(i)
-    # after looping, if there is anything in out, yield that too
-    if len(out):
-        yield out
-```
-
-### generators.loop
-```python
-@strict_globals(cycle=cycle)
-def loop():
-    '''
-    use this for infinite iterations with
-        for _ in loop():
-    instead of:
-        while True:
-    to get a free speedup in loops.
-    '''
-    return cycle({0})
-del cycle, strict_globals
-```
-
-### generators.just
-```python
-@strict_globals(cycle=cycle)
-def just(*args):
-    ''' this works as an infinite loop that yields
-        the given argument(s) over and over
-    '''
-    assert len(args) >= 1, 'generators.just needs at least one arg'
-    if len(args) == 1: # if only one arg is given
-        try:
-            # try to cycle in a set for iteration speedup
-            return cycle(set(args))
-        except:
-            # revert to cycling args as a tuple
-            return cycle(args)
-    else:
-        return cycle({args})
-del cycle, strict_globals
-```
-
-### generators.stream_split
-```python
-def stream_split(pipe, splitter, skip_empty=False):
-    ''' this function works a lot like groupby but splits on given patterns,
-        the same behavior as str.split provides. if skip_empty is True,
-        stream_split only yields pieces that have contents
-        Example:
-            splitting 1011101010101
-            by        10
-            returns   ,11,,,,1
-        Or if skip_empty is True
-            splitting 1011101010101
-            by        10
-            returns   11,1
-    '''
-    splitter = tuple(splitter)
-    len_splitter = len(splitter)
-    pipe=iter(pipe)
-    current = deque()
-    tmp = []
-    windowed = window(pipe, len(splitter))
-    for i in windowed:
-        if i == splitter:
-            skip(windowed, len(splitter)-1)
-            yield list(current)
-            current.clear()
-            tmp = []
-        else:
-            current.append(i[0])
-            tmp = i
-    if len(current) or len(tmp):
-        yield list(chain(current,tmp))
-```
-
-### generators.started
-```python
-@strict_globals(wraps=wraps)
-def started(generator_function):
-    """ starts a generator when created """
-    @wraps(generator_function)
-    def wrapper(*args, **kwargs):
-        g = generator_function(*args, **kwargs)
-        next(g)
-        return g
-    return wrapper
-del strict_globals, wraps
-```
-
-### generators.repeater
-```python
-def repeater(pipe, how_many=2):
-    ''' this function repeats each value in the pipeline however many times you need '''
-    r = range(how_many)
-    for i in pipe:
-        for _ in r:
-            yield i
-```
-
-### generators.average
-```python
-@started
-@strict_globals(total=total)
-def average():
-    """ generator that holds a rolling average """
-    count = 0
-    total = total()
-    i=0
-    while 1:
-        i = yield ((total.send(i)*1.0)/count if count else 0)
-        count += 1
-del total
-del started
-del strict_globals
-```
-
-### generators.unfork
-```python
-@noglobals
-def unfork(g):
-    """ returns a generator with one output at a time if
-        multiple outputs are coming out of the given """
-    for i in g:
-        for x in i:
-            yield x
-del noglobals
-```
-
-### generators.remember
-```python
-@started
-def remember():
-    ''' this coroutine remembers one thing for you and acts as a read-once method
-        of transportation for code. This makes obcessive cleanup of variables a
-        lot easier.
-    '''
-    a = None
-    b = None
-    for _ in loop():
-        b = yield b
-        a = yield a
-```
-
-### generators.iter_csv
-```python
-@strict_globals(DictReader=DictReader)
-def iter_csv(path, mode='r'):
-    with open(path, mode) as f:
-        for row in DictReader(f):
-            yield dict(row)
-del DictReader, strict_globals
-```
-
-### generators.counter
-```python
-@started
-@noglobals
-def counter():
-    "generator that holds a sum"
-    c = 0
-    while 1:
-        yield c
-        c += 1
-del started
-del noglobals
-```
-
-### generators.chunks
-```python
-@strict_globals(deque=deque)
-def chunks(stream, chunk_size, output_type=tuple):
-    ''' returns chunks of a stream '''
-    if callable(chunk_size):
-        ''' chunk_size is acting as a separator function '''
-        seperator = chunk_size
-        chunk = deque()
-        for i in stream:
-            if seperator(i) and len(chunk):
-                yield output_type(chunk)
-                chunk.clear()
-            chunk.append(i)
-    else:
-        chunk = deque(maxlen=chunk_size)
-        for i in stream:
-            chunk.append(i)
-            if len(chunk) == chunk_size:
-                yield output_type(chunk)
-                chunk.clear()
-    if len(chunk):
-        yield output_type(chunk)
-del deque
-del strict_globals
-```
-
-### generators.consume
-```python
-def consume(pipe, how_many=0):
-    for _ in (pipe if how_many==0 else islice(pipe, 0, how_many)):
-        pass
-```
-
-### generators.early_warning
-```python
-@strict_globals(warning=warning)
-def early_warning(iterable, name='this generator'):
-    ''' This function logs an early warning that the generator is empty.
-    This is handy for times when you're manually playing with generators and
-    would appreciate the console warning you ahead of time that your generator
-    is now empty, instead of being surprised with a StopIteration or
-    GeneratorExit exception when youre trying to test something. '''
-    nxt = None
-    prev = next(iterable)
-    while 1:
-        try:
-            nxt = next(iterable)
-        except:
-            warning(' {} is now empty'.format(name))
-            yield prev
-            break
-        else:
-            yield prev
-            prev = nxt
-del warning
-del strict_globals
-```
-
 ### generators.read
 ```python
 @strict_globals(partial=partial)
@@ -888,5 +733,230 @@ def read(path='', mode='r', record_size=None, record_seperator=None, offset=0, a
         # before this generator raises StopIteration, it will
         # close the file since we are using a context manager.
 del partial, stdin, strict_globals, read_with_seperator
+```
+
+### generators.remember
+```python
+@started
+def remember():
+    ''' this coroutine remembers one thing for you and acts as a read-once method
+        of transportation for code. This makes obcessive cleanup of variables a
+        lot easier.
+    '''
+    a = None
+    b = None
+    for _ in loop():
+        b = yield b
+        a = yield a
+```
+
+### generators.repeater
+```python
+def repeater(pipe, how_many=2):
+    ''' this function repeats each value in the pipeline however many times you need '''
+    r = range(how_many)
+    for i in pipe:
+        for _ in r:
+            yield i
+```
+
+### generators.side_task
+```python
+del print_function
+sys.path.append(os.path.dirname(__file__))
+del sys
+del os
+@strict_globals(map=map, iterable=iterable)
+def side_task(pipe, *side_jobs):
+    ''' allows you to run a function in a pipeline without affecting the data '''
+    # validate the input
+    assert iterable(pipe), 'side_task needs the first argument to be iterable'
+    for sj in side_jobs:
+        assert callable(sj), 'all side_jobs need to be functions, not {}'.format(sj)
+    # add a pass through function to side_jobs
+    side_jobs = (lambda i:i ,) + side_jobs
+    # run the pipeline
+    for i in map(pipe, *side_jobs):
+        yield i[0]
+del iterable, strict_globals
+```
+
+### generators.skip
+```python
+def skip(pipe, how_many=1):
+    ''' this is a helper function that allows you to skip x number of items
+        in a pipe. its basically the same is running next() on a generator
+        multiple times to move down the generator's stream.
+        The return value is the pipe that has now skipped x number of steps
+    '''
+    for _ in islice(pipe, how_many):
+        pass
+    return pipe
+```
+
+### generators.skip_first
+```python
+def skip_first(pipe, items=1):
+    ''' this is an alias for skip to parallel the dedicated skip_last function
+        to provide a little more readability to the code. the action of actually
+        skipping does not occur until the first iteration is done
+    '''
+    pipe = iter(pipe)
+    for i in skip(pipe, items):
+        yield i
+```
+
+### generators.skip_last
+```python
+def skip_last(pipe, how_many=1):
+    pipe = iter(pipe)
+    d = deque(islice(pipe, how_many), maxlen=how_many+1)
+    for _ in map(d.append, pipe):
+        yield d.popleft()
+```
+
+### generators.started
+```python
+@strict_globals(wraps=wraps)
+def started(generator_function):
+    """ starts a generator when created """
+    @wraps(generator_function)
+    def wrapper(*args, **kwargs):
+        g = generator_function(*args, **kwargs)
+        next(g)
+        return g
+    return wrapper
+del strict_globals, wraps
+```
+
+### generators.stream_split
+```python
+def stream_split(pipe, splitter, skip_empty=False):
+    ''' this function works a lot like groupby but splits on given patterns,
+        the same behavior as str.split provides. if skip_empty is True,
+        stream_split only yields pieces that have contents
+        Example:
+            splitting 1011101010101
+            by        10
+            returns   ,11,,,,1
+        Or if skip_empty is True
+            splitting 1011101010101
+            by        10
+            returns   11,1
+    '''
+    splitter = tuple(splitter)
+    len_splitter = len(splitter)
+    pipe=iter(pipe)
+    current = deque()
+    tmp = []
+    windowed = window(pipe, len(splitter))
+    for i in windowed:
+        if i == splitter:
+            skip(windowed, len(splitter)-1)
+            yield list(current)
+            current.clear()
+            tmp = []
+        else:
+            current.append(i[0])
+            tmp = i
+    if len(current) or len(tmp):
+        yield list(chain(current,tmp))
+```
+
+### generators.tee
+```python
+del print_function
+@noglobals
+def tee(pipeline, name, output_function=print):
+    for i in pipeline:
+        output_function('{} - {}'.format(name,i))
+        yield i
+del noglobals
+```
+
+### generators.timed_pipe
+```python
+@strict_globals(ts=ts)
+def timed_pipe(generator, seconds=3):
+    ''' This is a time limited pipeline. If you have a infinite pipeline and
+        want it to stop yielding after a certain amount of time, use this! '''
+    # grab the highest precision timer
+    # when it started
+    start = ts()
+    # when it will stop
+    end = start + seconds
+    # iterate over the pipeline
+    for i in generator:
+        # if there is still time
+        if ts() < end:
+            # yield the next item
+            yield i
+        # otherwise
+        else:
+            # stop
+            break
+del ts, strict_globals
+```
+
+### generators.timer
+```python
+@started
+@strict_globals(ts=ts)
+def timer():
+    """ generator that tracks time """
+    start_time = ts()
+    while 1:
+        yield ts()-start_time
+del ts, started, strict_globals
+```
+
+### generators.total
+```python
+@started
+@noglobals
+def total():
+    "generator that holds a total"
+    total = 0
+    while 1:
+        total += yield total
+del started, noglobals
+```
+
+### generators.unfork
+```python
+@noglobals
+def unfork(g):
+    """ returns a generator with one output at a time if
+        multiple outputs are coming out of the given """
+    for i in g:
+        for x in i:
+            yield x
+del noglobals
+```
+
+### generators.uniq
+```python
+def uniq(pipe):
+    ''' this works like bash's uniq command where the generator only iterates
+        if the next value is not the previous '''
+    pipe = iter(pipe)
+    previous = next(pipe)
+    yield previous
+    for i in pipe:
+        if i is not previous:
+            previous = i
+            yield i
+```
+
+### generators.window
+```python
+@strict_globals(deque=deque, islice=islice)
+def window(iterable, size=2):
+    ''' yields wondows of a given size '''
+    iterable = iter(iterable)
+    d = deque(islice(iterable, size-1), maxlen=size)
+    for _ in map(d.append, iterable):
+        yield tuple(d)
+del deque, islice, strict_globals
 ```
 
