@@ -3,6 +3,7 @@ setup.py
 generators/__init__.py
 generators/all_subslices.py
 generators/all_substrings.py
+generators/alternator.py
 generators/average.py
 generators/chain.py
 generators/chunk_on.py
@@ -23,6 +24,7 @@ generators/last.py
 generators/loop.py
 generators/map.py
 generators/multi_ops.py
+generators/peekable.py
 generators/performance_tools.py
 generators/read.py
 generators/remember.py
