@@ -1,7 +1,7 @@
 from distutils.core import setup
 import sys
 
-version = '2018.2.20'
+version = '2018.2.21'
 
 setup(
   name = 'generators',
