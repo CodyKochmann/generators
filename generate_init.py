@@ -2,7 +2,7 @@
 # @Author: Cody Kochmann
 # @Date:   2017-09-09 10:02:28
 # @Last Modified 2018-02-22
-# @Last Modified time: 2018-02-22 16:02:04
+# @Last Modified time: 2018-02-22 18:02:27
 
 header = '''#!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -13,14 +13,17 @@ import os.path
 
 sys.path.append(os.path.dirname(__file__))
 
-del sys
 del os
 
 from performance_tools import runs_per_second as rps
 '''
 
 footer = '''
-from Generator import Generator
+if sys.version_info >= (3,0):
+    from Generator import Generator
+
+del sys
+
 '''
 
 import sys
