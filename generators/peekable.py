@@ -74,3 +74,4 @@ if __name__ == '__main__':
         print(g)
     print(peekable(range(1)))
 
+    print('---')

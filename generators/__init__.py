@@ -41,8 +41,8 @@ from side_task import side_task
 from skip import skip
 from skip_first import skip_first
 from skip_last import skip_last
+from split import split
 from started import started
-from stream_split import stream_split
 from tee import tee
 from timed_pipe import timed_pipe
 from timer import timer
@@ -54,5 +54,6 @@ from window import window
 import inline_tools
 import performance_tools
 
-__all__ = ['all_subslices', 'all_substrings', 'alternator', 'average', 'chain', 'chunk_on', 'chunks', 'consume', 'counter', 'early_warning', 'every_other', 'first', 'fork', 'itemgetter', 'iter_csv', 'iter_kv', 'iterable', 'just', 'last', 'loop', 'map', 'multi_ops', 'peekable', 'read', 'remember', 'repeater', 'side_task', 'skip', 'skip_first', 'skip_last', 'started', 'stream_split', 'tee', 'timed_pipe', 'timer', 'total', 'unfork', 'uniq', 'window', 'inline_tools', 'performance_tools']
+from Generator import Generator
 
+__all__ = ['Generator', 'all_subslices', 'all_substrings', 'alternator', 'average', 'chain', 'chunk_on', 'chunks', 'consume', 'counter', 'early_warning', 'every_other', 'first', 'fork', 'itemgetter', 'iter_csv', 'iter_kv', 'iterable', 'just', 'last', 'loop', 'map', 'multi_ops', 'peekable', 'read', 'remember', 'repeater', 'side_task', 'skip', 'skip_first', 'skip_last', 'split', 'started', 'tee', 'timed_pipe', 'timer', 'total', 'unfork', 'uniq', 'window', 'inline_tools', 'performance_tools']

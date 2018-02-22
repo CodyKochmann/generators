@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 # @Author: Cody Kochmann
 # @Date:   2018-02-17 10:41:19
-# @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2018-02-17 15:04:27
+# @Last Modified 2018-02-22e>
+# @Last Modified time: 2018-02-22 15:58:25
 
 from collections import deque
 from skip import skip
 from window import window
 from chain import chain
 
-def stream_split(pipe, splitter, skip_empty=False):
+def split(pipe, splitter, skip_empty=False):
     ''' this function works a lot like groupby but splits on given patterns,
         the same behavior as str.split provides. if skip_empty is True,
-        stream_split only yields pieces that have contents
+        split only yields pieces that have contents
 
         Example:
 
@@ -46,4 +46,4 @@ def stream_split(pipe, splitter, skip_empty=False):
         yield list(chain(current,tmp))
 
 if __name__ == '__main__':
-    print(list(stream_split(''.join(map(str,range(10))),'345')))
+    print(list(split(''.join(map(str,range(10))),'345')))

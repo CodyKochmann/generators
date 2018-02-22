@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: Cody Kochmann
 # @Date:   2017-09-09 10:02:28
-# @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2017-12-09 13:35:31
+# @Last Modified 2018-02-22
+# @Last Modified time: 2018-02-22 16:02:04
 
 header = '''#!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -18,6 +18,11 @@ del os
 
 from performance_tools import runs_per_second as rps
 '''
+
+footer = '''
+from Generator import Generator
+'''
+
 import sys
 import os.path
 from os import listdir
@@ -41,7 +46,7 @@ gen = (i[:-3] for i in gen)
 
 # serves as the all that will be injected into __init__
 nested_tools = ['inline_tools', 'performance_tools']
-__all__ = []
+__all__ = ['Generator']
 
 # rebuild the __init__
 with open(path_of('__init__.py'), 'w') as f:
@@ -56,6 +61,7 @@ with open(path_of('__init__.py'), 'w') as f:
         __all__.append(i)
         print('adding nested import for', i)
         f.write('import {}\n'.format(i))
+    f.write(footer)
     print('adding __all__')
     f.write('\n__all__ = {}\n'.format(__all__))
 
