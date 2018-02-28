@@ -7,9 +7,12 @@ import os.path
 
 sys.path.append(os.path.dirname(__file__))
 
+del sys
 del os
 
 from performance_tools import runs_per_second as rps
+from Generator import Generator
+
 from all_subslices import all_subslices
 from all_substrings import all_substrings
 from alternator import alternator
@@ -52,11 +55,6 @@ from window import window
 
 import inline_tools
 import performance_tools
-
-if sys.version_info >= (3,0):
-    from Generator import Generator
-
-del sys
 
 
 __all__ = ['Generator', 'all_subslices', 'all_substrings', 'alternator', 'average', 'chain', 'chunk_on', 'chunks', 'consume', 'counter', 'early_warning', 'every_other', 'first', 'fork', 'itemgetter', 'iter_csv', 'iter_kv', 'iterable', 'just', 'last', 'loop', 'map', 'multi_ops', 'peekable', 'read', 'remember', 'repeater', 'side_task', 'skip', 'skip_first', 'skip_last', 'split', 'started', 'tee', 'timed_pipe', 'timer', 'total', 'unfork', 'uniq', 'window', 'inline_tools', 'performance_tools']
