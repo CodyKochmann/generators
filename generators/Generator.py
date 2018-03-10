@@ -154,6 +154,13 @@ class Generator:
     def next(self):
         return next(self._iterable)
 
+    def print(self, before='', use_repr=True):
+        return Generator(self.side_task((
+            lambda i:print('{}{}'.format(before, repr(i)))
+        ) if use_repr else (
+            lambda i:print('{}{}'.format(before, i))
+        )))
+
     #def __slice__(self, s):
     #    raise NotImplementedError()
     def __negative_slice__(self, s):
@@ -276,4 +283,4 @@ if __name__ == '__main__':
     print(Generator(range(10))[-2,-4].to(list))
     print(Generator(range(10))[-2,-4].max())
     print(Generator(range(10))[-2,-4].min())
-    print(Generator(range(10))[-2,-4].sum())
+    print(Generator(range(10)).print()[-2,-4].print().sum())

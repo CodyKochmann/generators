@@ -17,7 +17,7 @@ def itemgetter(iterable, indexes):
         for i,x in enumerate(iterable):
             if i in positive_indexes:
                 out[i]=x
-            negative_index_buffer.append(i)
+            negative_index_buffer.append(x)
         out.update({ni:negative_index_buffer[ni] for ni in negative_indexes})
     else:
         # if just positive results

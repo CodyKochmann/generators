@@ -1,7 +1,7 @@
 from distutils.core import setup
 import sys
 
-version = '2018.3.10'
+version = '2018.3.10.1'
 
 def using_ios_stash():
     ''' returns true if sys path hints the install is running on ios '''
