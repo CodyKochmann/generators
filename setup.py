@@ -9,7 +9,7 @@ def using_ios_stash():
 
 def requires():
     ''' generates a list of requirements for generators '''
-    yield 'mobile'
+    yield 'strict_functions'
     if sys.version_info < (3,0):
         if not using_ios_stash():
             yield 'future'
