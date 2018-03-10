@@ -17,7 +17,7 @@ def requires():
 setup(
   name = 'generators',
   packages = ['generators'], # this must be the same as the name above
-  install_requires = list(requires())
+  install_requires = list(requires()),
   version = version,
   description = 'collection of helpful generators that should have been in itertools',
   author = 'Cody Kochmann',
