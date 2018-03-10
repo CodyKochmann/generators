@@ -1,181 +1,279 @@
-# -*- coding: utf-8 -*-
-# @Author: Cody Kochmann
-# @Date:   2018-02-22 14:41:06
-# @Last Modified 2018-02-28
-# @Last Modified time: 2018-02-28 14:29:25
-
+from __future__ import print_function
+from functools import wraps, partial
+from strict_functions import overload, attempt
+from inspect import getsource
+import itertools
+from itertools import permutations, islice
 import sys
 
-if sys.version_info < (3,0):
-    Generator = NotImplemented
-else:
-    from itertools import (
-        accumulate,
-        combinations,
-        combinations_with_replacement,
-        compress,
-        cycle,
-        dropwhile,
-        filterfalse,
-        groupby,
-        islice,
-        permutations,
-        product,
-        starmap,
-        takewhile,
-        zip_longest
-    )
+import generators
+from generators import iterable, consume, itemgetter
 
-    from generators import (
-        all_subslices,
-        all_substrings,
-        alternator,
-        average,
-        chain,
-        chunk_on,
-        chunks,
-        consume,
-        counter,
-        every_other,
-        first,
-        fork,
-        just,
-        last,
-        map,
-        multi_ops,
-        repeater,
-        side_task,
-        skip,
-        skip_first,
-        skip_last,
-        split,
-        tee,
-        timed_pipe,
-        total,
-        unfork,
-        uniq,
-        window
-    )
+class OrderError(Exception):
+    pass
 
-    from functools import wraps
+class Generator:
+    def __init__(self, input_iterable):
+        #print('__init__ -', locals())
+        self._iterable = iter(input_iterable)
 
-    def chainable(fn):
+    def __iter__(self):
+        return self._iterable
+
+    def __repr__(self):
+        return '< Generator - witness mah brilliance... >'
+
+    __str__ = __repr__
+
+    def to(self, you_want_me_to_wear_what):
+        ''' use this function to convert the generator into another type '''
+        assert callable(you_want_me_to_wear_what), 'Generator.to needs a callable argument'
+        return you_want_me_to_wear_what(self)
+
+    @staticmethod
+    def __chainable_method__(fn):
         @wraps(fn)
-        def imma_firin(self, *mah, **lazars):
-            return self.__class__(fn(self, *mah, **lazars))
-        return imma_firin
+        def wrapper(*a, **k):
+            out = fn(*a, **k)
+            if iterable(out):
+                return Generator(out)
+            else:
+                return out
+        return wrapper
 
-    def switch_vars(fn):
+    @staticmethod
+    def __grab_first__(t, l):
+        if type(t)==type:
+            check = lambda i, t=t:isinstance(i, t)
+        elif callable(t):
+            check = t
+        else:
+            raise ValueError('t({}) is not a function or type'.format(t))
+        for i,v in enumerate(list(l)):
+            if check(v):
+                return l.pop(i)
+        raise OrderError()
+
+    @staticmethod
+    def __require_args__(count, args):
+        if count!=len(args):
+            raise ValueError(
+                'wrong arg count\nneeded\n    {} args\nreceived\n    {} args\nraw\n    {}'.format(
+                    count,
+                    len(args),
+                    repr(tuple(args))
+                )
+            )
+
+    @staticmethod
+    def __printable_fn__(fn):
+        fn_repr = repr(fn)
+        return attempt(
+                partial(getsource, fn),
+                fn_repr
+            ) if '<lambda' in fn_repr else (
+                getattr(fn, '__name__', fn_repr)
+            )
+
+    @staticmethod
+    def __organize_args__(arg_pattern, args, fn=None, name=None):
+        _args = args[:]
+        Generator.__require_args__(len(arg_pattern), args)
+        try:
+            return list(map(
+                partial(
+                    Generator.__grab_first__,
+                    l=args[:]
+                ),
+                arg_pattern
+            ))
+        except OrderError:
+            if fn is not None:
+                # this is for clean debugging
+                _og_args = repr(tuple(args[:]))
+                # try other combinations
+                for i in permutations(args):
+                    try:
+                        return Generator.__organize_args__(
+                            arg_pattern,
+                            list(i),
+                        )
+                    except OrderError:
+                        pass
+                raise ValueError(
+                    '-\ncouldnt find a valid ordering for:\n    Generator.{}\nrequired:\n    {}\nrecieved:\n    {}'.format(
+                        name,
+                        '\n    '.join(
+                            map(
+                                Generator.__printable_fn__, arg_pattern
+                            )
+                        ),
+                        _og_args
+                    )
+                )
+            else:
+                raise OrderError()
+
+    @staticmethod
+    def add_method(fn, arg_pattern, name=None, chainable=True):
+        if name is None:
+            name = fn.__name__
         @wraps(fn)
-        def imma_firin(mah, lazars):
-            return fn(lazars, mah)
-        return imma_firin
-
-    class Generator(object):
-        ''' generators, just more desperate to do crazy s*** '''
-        def __init__(self, input_iterable):
-            #print('__init__ -', locals())
-            self._iterable = iter(input_iterable)
-
-        def __iter__(self):
-            return self._iterable
-
-        def __repr__(self):
-            return '< Generator - witness mah brilliance... >'
-
-        __str__ = __repr__
-
-        def to(self, you_want_me_to_wear_what):
-            ''' use this function to convert the generator into another type '''
-            assert callable(you_want_me_to_wear_what), 'Generator.to needs a callable argument'
-            return you_want_me_to_wear_what(self)
-
-        # staple madness from this library onto this class as a bunch of methods
-        all_subslices  = chainable(all_subslices)
-        all_substrings = chainable(all_substrings)
-        alternator     = chainable(alternator)
-        average        = chainable(average)
-        chain          = chainable(chain)
-        chunk_on       = chainable(chunk_on)
-        chunks         = chainable(chunks)
-        consume        = chainable(consume)
-        counter        = chainable(counter)
-        every_other    = chainable(every_other)
-        fork           = chainable(fork)
-        just           = chainable(just)
-        map            = chainable(map)
-        multi_ops      = chainable(multi_ops)
-        repeater       = chainable(repeater)
-        side_task      = chainable(side_task)
-        skip           = chainable(skip)
-        skip_first     = chainable(skip_first)
-        skip_last      = chainable(skip_last)
-        split          = chainable(split)
-        tee            = chainable(tee)
-        timed_pipe     = chainable(timed_pipe)
-        total          = chainable(total)
-        unfork         = chainable(unfork)
-        uniq           = chainable(uniq)
-        window         = chainable(window)
-
-        # add the simpletons from generators that don't return iterables
-        first = lambda self, i=1:first(self, i) if i==1 else Generator(first(self, i))
-        last = lambda self, i=1:last(self, i) if i==1 else Generator(last(self, i))
-
-        # F*** it lets add stuff from itertools!!!
-        accumulate                    = chainable(accumulate)
-        combinations                  = chainable(combinations)
-        combinations_with_replacement = chainable(combinations_with_replacement)
-        compress                      = chainable(compress)
-        cycle                         = chainable(cycle)
-        groupby                       = chainable(groupby)
-        islice                        = chainable(islice)
-        permutations                  = chainable(permutations)
-        product                       = chainable(product)
-
-        # functions that need a little arg resorting
-        filterfalse = lambda self, fn:Generator(filterfalse(fn, self))
-        dropwhile = lambda self, fn:Generator(dropwhile(fn, self))
-        starmap = lambda self, fn:Generator(starmap(fn, self))
-        takewhile = lambda self, fn:Generator(takewhile(fn, self))
-
-        # add keywords from python's builtins
-        filter = lambda self, fn:Generator(filter(fn, self))
-        sort = lambda self:Generator(sorted(self))
-        max = lambda self:max(self)
-        sum = lambda self:sum(self)
-
-    if __name__ == '__main__':
-        true_og = (i for i in range(10))
-
-        print(
-            #Generator(i for i in range(10)).window(3).chunks(2) #.first()
-            Generator(i for i in range(10)).window(3).skip().skip().islice(4,8).to(list)
+        def method(*args):
+            return fn(*Generator.__organize_args__(
+                arg_pattern,
+                list(args),
+                fn,
+                name=name
+            ))
+        if chainable:
+            method = wraps(fn)(Generator.__chainable_method__(method))
+        if hasattr(Generator, name):
+            method = overload(
+                method,
+                getattr(Generator, name)
+            )
+        setattr(
+            Generator,
+            name,
+            method
         )
 
-        # pe 1 - sum of multiples of 3 and 5 up to 1000
-        print(
-            'pe-1',
-            sum(Generator(range(1000)).filterfalse(lambda i:i%3 and i%5))
-        )
-        print(
-            'pe-1',
-            #sum(Generator(range(0, 1000, 3)).chain(range(0, 1000, 5)).to(set))
-            Generator(range(0, 1000, 3)).chain(range(0, 1000, 5)).sum()
-        )
-        exit()
+    @staticmethod
+    def add_methods(methods_to_add):
+        ''' use this to bulk add new methods to Generator '''
+        for i in methods_to_add:
+            try:
+                Generator.add_method(*i)
+            except Exception as ex:
+                raise Exception('issue adding {} - {}'.format(repr(i), ex))
 
-        # pe 3 - largest prime factor for 600851475143
-        print(
-            'pe-3',
-            Generator(
-                count(1)
-            ).map(
-                lambda i:int(600851475143/i)
-            ).uniq().filter(
-                isPrime
-            ).first()
-        )
+    def __next__(self):
+        return next(self._iterable)
 
+    def next(self):
+        return next(self._iterable)
 
+    #def __slice__(self, s):
+    #    raise NotImplementedError()
+    def __negative_slice__(self, s):
+        if s.step is None:
+            return {#start,stop
+                    (None, False):lambda:(self.last(abs(s.stop))), # [:-1]
+                    (False, None):lambda:(self.skip_last(abs(s.start))), # [-1:]
+                    (True, False):lambda:(self.skip(s.start).skip_last(abs(s.stop))), # [5:-1]
+                    (False, True):lambda:(self.last(abs(s.start)).first(s.stop)),  # [-10:6]
+                    (False,False):lambda:(self.last(abs(s.start)).skip_last(abs(s.stop)))  # [-5:-1]
+            }[tuple(map((lambda i:None if i is None else i>0), [s.start, s.stop]))]()
+        else:
+            raise NotImplemented("This will be possible once I can map out all the possibilities")
 
+    def __getitem__(self, a):
+        if isinstance(a, slice):
+            return Generator((
+                islice(self, a.start, a.stop, a.step)
+            ) if all(i is None or 0<i for i in (a.start, a.stop, a.step)) else (
+                self.__negative_slice__(a)
+            ))
+        elif isinstance(a, int):
+            # get single item
+            if a == 0:
+                return next(self)
+            elif a > 0:
+                return next(self.skip(a-1))
+            elif a < 0:
+                return next(self.last(abs(a)))
+        elif isinstance(a, tuple): # multi-item slice
+            return Generator(generators.itemgetter(self, a))
+        else:
+            raise ValueError('invalid slice argument - {}'.format(repr(a)))
+
+# add the stuff from generators
+Generator.add_methods([
+    [generators.map, [Generator, callable]],
+    [generators.map, [Generator, callable, callable]],
+    [generators.map, [Generator, callable, callable, callable]],
+    [generators.map, [Generator, callable, callable, callable, callable]],
+    [generators.all_subslices, [Generator]],
+    [generators.all_substrings, [Generator]],
+    [generators.alternator, [Generator, iterable], 'alternate'],
+    [generators.alternator, [Generator, iterable, iterable], 'alternate'],
+    [generators.alternator, [Generator, iterable, iterable, iterable], 'alternate'],
+    [generators.chain, [Generator, iterable]],
+    [generators.chain, [Generator, iterable, iterable]],
+    [generators.chain, [Generator, iterable, iterable, iterable]],
+    [generators.chunks, [Generator, iterable], 'chunk'],
+    [generators.chunks, [Generator, iterable, iterable], 'chunk'],
+    [generators.chunks, [Generator, iterable, iterable, iterable], 'chunk'],
+    [generators.chunk_on, [Generator, callable]],
+    [generators.consume, [Generator]],
+    [generators.every_other, [Generator, int]],
+    [generators.first, [Generator]],
+    [generators.first, [Generator, int]],
+    [generators.fork, [Generator, int]],
+    [generators.iterable, [object]],
+    [generators.last, [Generator]],
+    [generators.last, [Generator, int]],
+    [generators.multi_ops, [Generator, callable]],
+    [generators.multi_ops, [Generator, callable, callable]],
+    [generators.multi_ops, [Generator, callable, callable, callable]],
+    [generators.multi_ops, [Generator, callable, callable, callable, callable]],
+    [generators.repeater, [Generator], 'repeat'],
+    [generators.repeater, [Generator, int], 'repeat'],
+    [generators.reverse, [Generator]],
+    [generators.side_task, [Generator, callable]],
+    [generators.side_task, [Generator, callable, callable]],
+    [generators.side_task, [Generator, callable, callable, callable]],
+    [generators.side_task, [Generator, callable, callable, callable, callable]],
+    [generators.skip, [Generator]],
+    [generators.skip, [Generator, int]],
+    [generators.skip_first, [Generator]],
+    [generators.skip_first, [Generator, int]],
+    [generators.skip_last, [Generator]],
+    [generators.skip_last, [Generator, int]],
+    [generators.split, [Generator, iterable]],
+    [generators.split, [Generator, iterable, bool]],
+    [generators.tee, [Generator, str]],
+    [generators.tee, [Generator, str, callable]],
+    [generators.timed_pipe, [Generator], 'timed'],
+    [generators.timed_pipe, [Generator, int], 'timed'],
+    [generators.unfork, [Generator]],
+    [generators.uniq, [Generator]],
+    [generators.window, [Generator]],
+    [generators.window, [Generator, int]]
+])
+# add the stuff from builtins
+Generator.add_methods([
+    [filter, [callable, Generator]],
+    [sorted, [callable, Generator], 'sort'],
+    [max, [Generator], None, False],
+    [min, [Generator], None, False],
+    [sum, [Generator], None, False]
+])
+
+if __name__ == '__main__':
+
+    g = Generator('hello')
+    print(g)
+    print(g.all_subslices().map(print, print).alternate('wwww', 'tttt').to(list))
+    print(Generator(range(10)).map(print).to(list))
+    print(Generator(range(10))[8])
+    print(Generator(range(10))[-8])
+    print(Generator(range(10))[1:5].to(list))
+    print(Generator(range(10))[4:].to(list))
+    print(Generator(range(10))[:4].to(list))
+    print(Generator(range(10))[-5:-1].to(list))
+    print(Generator(range(10))[-4:].to(list))
+    print(Generator(range(10))[:-4].to(list))
+    print(Generator(range(10))[1:5:2].to(list))
+    print(Generator(range(10))[4::2].to(list))
+    print(Generator(range(10))[:4:2].to(list))
+    print(Generator(range(10))[1,5,2].to(list))
+    print(Generator(range(10))[4,2].to(list))
+    print(Generator(range(10))[2,4].to(list))
+    print(Generator(range(10))[-1,-5,-2].to(list))
+    print(Generator(range(10))[-4,-2].to(list))
+    print(Generator(range(10))[-2,-4].to(list))
+    print(Generator(range(10))[-2,-4].max())
+    print(Generator(range(10))[-2,-4].min())
+    print(Generator(range(10))[-2,-4].sum())
