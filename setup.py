@@ -1,10 +1,17 @@
+from __future__ import print_function
 from distutils.core import setup
 import sys
+import os
 
-version = '2018.3.10.2'
+version = '2018.3.10.3'
 
 def using_ios_stash():
     ''' returns true if sys path hints the install is running on ios '''
+    print('detected modules')
+    for m in sys.modules.keys():
+        print('-', m)
+    print('detected install path:')
+    print(os.path.dirname(__file__))
     return all(i in ' '.join(sys.argv).lower() for i in ['mobile', 'pythonista'])
 
 def requires():
