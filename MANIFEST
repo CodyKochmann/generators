@@ -30,6 +30,7 @@ generators/performance_tools.py
 generators/read.py
 generators/remember.py
 generators/repeater.py
+generators/reverse.py
 generators/side_task.py
 generators/skip.py
 generators/skip_first.py
