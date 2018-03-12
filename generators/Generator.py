@@ -5,7 +5,7 @@ from inspect import getsource
 import itertools
 from itertools import permutations, islice
 import sys
-
+import operator
 import generators
 from generators import iterable, consume, itemgetter
 
@@ -206,6 +206,7 @@ Generator.add_methods([
     [generators.alternator, [Generator, iterable], 'alternate'],
     [generators.alternator, [Generator, iterable, iterable], 'alternate'],
     [generators.alternator, [Generator, iterable, iterable, iterable], 'alternate'],
+    [generators.chain, [Generator]],
     [generators.chain, [Generator, iterable]],
     [generators.chain, [Generator, iterable, iterable]],
     [generators.chain, [Generator, iterable, iterable, iterable]],
@@ -251,11 +252,42 @@ Generator.add_methods([
 ])
 # add the stuff from builtins
 Generator.add_methods([
-    [filter, [callable, Generator]],
-    [sorted, [callable, Generator], 'sort'],
+    [lambda g,k=None:(i for i in sorted(g, key=k)), [Generator], 'sort'],
+    [lambda g,k=None:(i for i in sorted(g, key=k)), [Generator, callable], 'sort'],
     [max, [Generator], None, False],
     [min, [Generator], None, False],
     [sum, [Generator], None, False]
+])
+
+def _accumulate(iterable, func=operator.add): # this was from the itertools documentation
+    'Return running totals'
+    # accumulate([1,2,3,4,5]) --> 1 3 6 10 15
+    # accumulate([1,2,3,4,5], operator.mul) --> 1 2 6 24 120
+    it = iter(iterable)
+    try:
+        total = next(it)
+    except StopIteration:
+        return
+    yield total
+    for element in it:
+        total = func(total, element)
+        yield total
+
+# add stuff from itertools
+Generator.add_methods([
+    [itertools.compress, [Generator, iterable]],
+    [itertools.dropwhile, [callable, Generator]],
+    [itertools.groupby, [Generator, callable]],
+    [itertools.takewhile, [callable, Generator]],
+    [itertools.permutations, [Generator, int]],
+    [itertools.combinations, [Generator, int]],
+    [itertools.combinations_with_replacement, [Generator, int]],
+    [(lambda g,r:itertools.product(g, repeat=r)), [Generator, int], 'product'],
+    [filter, [callable, Generator]],
+    [getattr(itertools, 'accumulate', _accumulate), [Generator, callable], 'accumulate'],
+    [getattr(itertools, 'ifilter', filter), [callable, Generator], 'filter'],
+    [getattr(itertools, 'filterfalse', getattr(itertools, 'ifilterfalse', (lambda f,g:(i for i in g if f(i))))), [Generator, int], 'filterfalse'],
+    [getattr(itertools, 'izip', zip), [Generator, int], 'zip']
 ])
 
 if __name__ == '__main__':
