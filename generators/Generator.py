@@ -21,7 +21,7 @@ class Generator:
         return self._iterable
 
     def __repr__(self):
-        return '< Generator - witness mah brilliance... >'
+        return '<Generator with frickin laser beams at {}>'.format(hex(id(self)))
 
     __str__ = __repr__
 
