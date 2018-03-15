@@ -259,7 +259,7 @@ Generator.add_methods([
     [sum, [Generator], None, False]
 ])
 
-def _accumulate(iterable, func=operator.add): # this was from the itertools documentation
+def _accumulate(iterable, func=(lambda a,b:a+b)): # this was from the itertools documentation
     'Return running totals'
     # accumulate([1,2,3,4,5]) --> 1 3 6 10 15
     # accumulate([1,2,3,4,5], operator.mul) --> 1 2 6 24 120
@@ -279,12 +279,15 @@ Generator.add_methods([
     [itertools.dropwhile, [callable, Generator]],
     [itertools.groupby, [Generator, callable]],
     [itertools.takewhile, [callable, Generator]],
+    [itertools.permutations, [Generator]],
+    [itertools.combinations, [Generator]],
     [itertools.permutations, [Generator, int]],
     [itertools.combinations, [Generator, int]],
     [itertools.combinations_with_replacement, [Generator, int]],
     [(lambda g,r:itertools.product(g, repeat=r)), [Generator, int], 'product'],
     [filter, [callable, Generator]],
     [getattr(itertools, 'accumulate', _accumulate), [Generator, callable], 'accumulate'],
+    [getattr(itertools, 'accumulate', _accumulate), [Generator], 'accumulate'],
     [getattr(itertools, 'ifilter', filter), [callable, Generator], 'filter'],
     [getattr(itertools, 'filterfalse', getattr(itertools, 'ifilterfalse', (lambda f,g:(i for i in g if f(i))))), [Generator, int], 'filterfalse'],
     [getattr(itertools, 'izip', zip), [Generator, int], 'zip']
