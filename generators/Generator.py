@@ -285,6 +285,7 @@ Generator.add_methods([
     [itertools.combinations, [Generator, int]],
     [itertools.combinations_with_replacement, [Generator, int]],
     [(lambda g,r:itertools.product(g, repeat=r)), [Generator, int], 'product'],
+    [(lambda g,r:itertools.product(g, repeat=r)), [Generator], 'product'],
     [filter, [callable, Generator]],
     [getattr(itertools, 'accumulate', _accumulate), [Generator, callable], 'accumulate'],
     [getattr(itertools, 'accumulate', _accumulate), [Generator], 'accumulate'],
