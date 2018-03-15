@@ -256,7 +256,8 @@ Generator.add_methods([
     [lambda g,k=None:(i for i in sorted(g, key=k)), [Generator, callable], 'sort'],
     [max, [Generator], None, False],
     [min, [Generator], None, False],
-    [sum, [Generator], None, False]
+    [sum, [Generator], None, False],
+    [enumerate, [Generator]]
 ])
 
 def _accumulate(iterable, func=(lambda a,b:a+b)): # this was from the itertools documentation
