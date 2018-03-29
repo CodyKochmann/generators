@@ -154,7 +154,7 @@ class Generator:
     def next(self):
         return next(self._iterable)
 
-    def print(self, before='', use_repr=True):
+    def print(self, before='', use_repr=False):
         return Generator(self.side_task((
             lambda i:print('{}{}'.format(before, repr(i)))
         ) if use_repr else (
