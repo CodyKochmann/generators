@@ -8,17 +8,17 @@ from collections import deque
 from strict_functions import strict_globals
 
 @strict_globals(deque=deque)
-def chunk_on(pipeline, new_chunk_signal):
+def chunk_on(pipeline, new_chunk_signal, output_type=tuple):
     ''' split the stream into seperate chunks based on a new chunk signal '''
     out = deque()
     for i in pipeline:
         if new_chunk_signal(i) and len(out): # if new chunk start detected
-            yield tuple(out)
+            yield output_type(out)
             out.clear()
         out.append(i)
     # after looping, if there is anything in out, yield that too
     if len(out):
-        yield tuple(out)
+        yield output_type(out)
 
 if __name__ == '__main__':
     for i in chunk_on(range(30), lambda i:i%3==0):

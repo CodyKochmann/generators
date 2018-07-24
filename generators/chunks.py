@@ -24,7 +24,7 @@ def chunks(stream, chunk_size, output_type=tuple):
     if callable(chunk_size):
         print('callable')
         ''' chunk_size is acting as a separator function '''
-        for chunk in chunk_on(stream, chunk_size):
+        for chunk in chunk_on(stream, chunk_size, output_type):
             yield chunk
     else:
         it = iter(stream)
