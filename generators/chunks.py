@@ -21,6 +21,7 @@ def chunks(stream, chunk_size, output_type=tuple):
     ''' returns chunks of a stream '''
     assert iterable(stream), 'chunks needs stream to be iterable'
     assert (isinstance(chunk_size, int) and chunk_size > 0) or callable(chunk_size), 'chunks needs chunk_size to be a positive int or callable'
+    assert callable(output_type), 'chunks needs output_type to be callable'
     if callable(chunk_size):
         print('callable')
         ''' chunk_size is acting as a separator function '''
