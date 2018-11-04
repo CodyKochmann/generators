@@ -13,6 +13,7 @@ from all_subslices import all_subslices
 from all_substrings import all_substrings
 from alternator import alternator
 from average import average
+from apply_to_last import apply_to_last
 from chain import chain
 from chunk_on import chunk_on
 from chunks import chunks
@@ -53,15 +54,16 @@ from window import window
 import inline_tools
 import performance_tools
 
-if __name__ != '__init__' and '__all__' not in dir(sys.modules[__name__]):
-    # this prevents recursive importing
+# this prevents recursive importing
+if __name__ != '__init__' and 'Generator' not in dir(sys.modules[__name__]) and 'Generator' not in globals():
     from Generator import Generator
     G = Generator
+
 #    print('importing Generator')
 #else:
 #    print('skipping Generator')
 
-__all__ = ['G', 'Generator', 'all_subslices', 'all_substrings', 'alternator', 'average', 'chain', 'chunk_on', 'chunks', 'consume', 'counter', 'early_warning', 'every_other', 'first', 'fork', 'itemgetter', 'iter_csv', 'iter_kv', 'iterable', 'just', 'last', 'loop', 'map', 'multi_ops', 'peekable', 'read', 'remember', 'repeater', 'side_task', 'skip', 'skip_first', 'skip_last', 'split', 'started', 'tee', 'timed_pipe', 'timer', 'total', 'unfork', 'uniq', 'window', 'inline_tools', 'performance_tools']
+__all__ = ['G', 'Generator', 'apply_to_last', 'all_subslices', 'all_substrings', 'alternator', 'average', 'chain', 'chunk_on', 'chunks', 'consume', 'counter', 'early_warning', 'every_other', 'first', 'fork', 'itemgetter', 'iter_csv', 'iter_kv', 'iterable', 'just', 'last', 'loop', 'map', 'multi_ops', 'peekable', 'read', 'remember', 'repeater', 'side_task', 'skip', 'skip_first', 'skip_last', 'split', 'started', 'tee', 'timed_pipe', 'timer', 'total', 'unfork', 'uniq', 'window', 'inline_tools', 'performance_tools']
 
 sys.path.remove(os.path.dirname(__file__))
 

@@ -5,9 +5,15 @@ from inspect import getsource
 import itertools
 from itertools import permutations, islice
 import sys
+import os
 import operator
-import generators
-from generators import iterable, consume, itemgetter
+
+sys.path.append(os.path.dirname(__file__))
+import __init__ as generators
+iterable = generators.iterable
+consume = generators.consume
+itemgetter = generators.itemgetter
+sys.path.remove(os.path.dirname(__file__))
 
 class OrderError(Exception):
     pass
@@ -206,13 +212,12 @@ Generator.add_methods([
     [generators.alternator, [Generator, iterable], 'alternate'],
     [generators.alternator, [Generator, iterable, iterable], 'alternate'],
     [generators.alternator, [Generator, iterable, iterable, iterable], 'alternate'],
+    [generators.apply_to_last, [Generator, callable]],
     [generators.chain, [Generator]],
     [generators.chain, [Generator, iterable]],
     [generators.chain, [Generator, iterable, iterable]],
     [generators.chain, [Generator, iterable, iterable, iterable]],
-    [generators.chunks, [Generator, iterable], 'chunk'],
-    [generators.chunks, [Generator, iterable, iterable], 'chunk'],
-    [generators.chunks, [Generator, iterable, iterable, iterable], 'chunk'],
+    [generators.chunks, [Generator, int], 'chunk'],
     [generators.chunk_on, [Generator, callable]],
     [generators.consume, [Generator]],
     [generators.every_other, [Generator, int]],
