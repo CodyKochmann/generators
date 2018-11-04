@@ -2,9 +2,12 @@
 setup.py
 generators/Generator.py
 generators/__init__.py
+generators/__main__.py
+generators/__test__.py
 generators/all_subslices.py
 generators/all_substrings.py
 generators/alternator.py
+generators/apply_to_last.py
 generators/average.py
 generators/chain.py
 generators/chunk_on.py
