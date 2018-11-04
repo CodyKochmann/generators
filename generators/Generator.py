@@ -8,12 +8,8 @@ import sys
 import os
 import operator
 
-sys.path.append(os.path.dirname(__file__))
-import __init__ as generators
-iterable = generators.iterable
-consume = generators.consume
-itemgetter = generators.itemgetter
-sys.path.remove(os.path.dirname(__file__))
+import generators
+from generators import iterable, consume, itemgetter
 
 class OrderError(Exception):
     pass

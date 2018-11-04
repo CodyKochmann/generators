@@ -55,9 +55,11 @@ import inline_tools
 import performance_tools
 
 # this prevents recursive importing
-if __name__ != '__init__' and 'Generator' not in dir(sys.modules[__name__]) and 'Generator' not in globals():
+try:
     from Generator import Generator
     G = Generator
+except ImportError:
+    pass
 
 #    print('importing Generator')
 #else:
