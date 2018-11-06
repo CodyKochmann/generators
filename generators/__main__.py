@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Author: Cody Kochmann
 
-from sys import argv
+import sys
 import argparse
 
 parser = argparse.ArgumentParser(prog='__main__.py')
@@ -17,12 +17,12 @@ parser.add_argument(
 #    action='store_true'
 #)
 
-if '__main__.py' in argv[-1] or 'help' in argv:
+if '__main__.py' in sys.argv[-1] or 'help' in sys.argv:
     parsed = parser.parse_args(['-h'])
 
 args, unknown = parser.parse_known_args()
 
 if args.test:
-    print('running unittests for generators')
-    from generators.__test__ import main
+    sys.argv = [sys.argv[0]]
+    from generators.__test__ import *
     main(verbosity=2)

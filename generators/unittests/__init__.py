@@ -2,6 +2,7 @@
 
 import sys
 from os.path import abspath, dirname
+from unittest import main
 
 # this adds everything in the directory above to the importable path of this directory
 __file_path__ = abspath(__file__)
