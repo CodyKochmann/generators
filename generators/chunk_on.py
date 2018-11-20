@@ -24,12 +24,3 @@ def chunk_on(pipeline, new_chunk_signal, output_type=tuple):
     # after looping, if there is anything in out, yield that too
     if len(out):
         yield output_type(out)
-
-if __name__ == '__main__':
-    for i in chunk_on(range(30), lambda i:i%3==0):
-        print(i)
-
-    l = list(range(30))
-    print(list(chunk_on(l, lambda i:i==15)))
-    print(list(chunk_on(l, lambda i:i%5==0)))
-    print(list(chunk_on(l, lambda i:str(i).startswith('1'))))
