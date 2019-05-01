@@ -9,7 +9,7 @@ import os
 import operator
 
 import generators
-from generators import iterable, consume, itemgetter
+from generators import iterable, consume, itemgetter, rps
 
 class OrderError(Exception):
     pass
@@ -156,12 +156,14 @@ class Generator:
     def next(self):
         return next(self._iterable)
 
-    def print(self, before='', use_repr=False):
+    def print(self, before='', use_repr=False, **print_options):
         return Generator(self.side_task((
-            lambda i:print('{}{}'.format(before, repr(i)))
+            lambda i:print('{}{}'.format(before, repr(i)), **print_options)
         ) if use_repr else (
-            lambda i:print('{}{}'.format(before, i))
+            lambda i:print('{}{}'.format(before, i), **print_options)
         )))
+
+    benchmark = rps
 
     #def __slice__(self, s):
     #    raise NotImplementedError()
