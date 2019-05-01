@@ -2,7 +2,7 @@
 # @Author: Cody Kochmann
 # @Date:   2019-05-01 08:50:41
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2019-05-01 09:21:48
+# @Last Modified time: 2019-05-01 09:23:06
 
 '''
     This example is a little snippet I use every now and then to materialize
@@ -26,7 +26,7 @@ def valid_ip(s: str) -> bool:
     except:
         return False
 
-host_dns = G(  # iterate over
+host_dns = G(  # iterate over each line on /etc/hosts
     open('/etc/hosts', 'r')
 ).map(  # strip trailing whitespace
     str.strip
