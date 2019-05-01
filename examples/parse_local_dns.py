@@ -2,7 +2,7 @@
 # @Author: Cody Kochmann
 # @Date:   2019-05-01 08:50:41
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2019-05-01 09:23:06
+# @Last Modified time: 2019-05-01 09:25:38
 
 '''
     This example is a little snippet I use every now and then to materialize
@@ -40,7 +40,7 @@ host_dns = G(  # iterate over each line on /etc/hosts
     lambda fields: [[hostname, fields[0]] for hostname in fields[1:]]
 ).chain(  # chain the lists so you have one long k,v stream
 #).print(  # uncomment this line to see the k,v pairs be materialized
-).to(dict)
+).to(dict)  # feed the k,v stream to dict to materialize the dictionary
 
 if __name__ == '__main__':
 
