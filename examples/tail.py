@@ -2,7 +2,7 @@
 # @Author: Cody Kochmann
 # @Date:   2019-05-01 07:54:28
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2019-05-01 08:43:32
+# @Last Modified time: 2019-05-02 13:24:38
 
 """ This demonstrates how you can use generator pipelines to implement tail in
     pure python.
@@ -11,12 +11,11 @@
 import os
 from typing import Iterable
 
-# this example does you to have inotify installed
+# this example does require you to have inotify installed
 try:
     import inotify.adapters
 except ImportError:
     raise ImportError('''
-
         this example requires that you have "inotify" installed so python
         can watch for file events. If you're using pip, "pip install inotify"
         is all you need!
