@@ -2,7 +2,7 @@
 # @Author: Cody Kochmann
 # @Date:   2019-05-02 13:20:11
 # @Last Modified by:   Cody Kochmann
-# @Last Modified time: 2019-05-02 14:26:50
+# @Last Modified time: 2019-05-04 12:03:40
 
 ''' This example shows you how you can use generators to make code that scrapes
     html a lot less bloated.
@@ -48,7 +48,7 @@ def scrape_urls(target):
     ).filter(  # filter for relative and non-relative urls
         lambda s: (s.startswith('/') or '://' in s) and ' ' not in s
     ).map(  # add target to the beginning of relative urls
-        lambda url: target.strip('/') + url if url.startswith('/') else url
+        lambda url: '/'.join(target.split('/')[:3]) + url if url.startswith('/') else url
     # ).print('found:'  # uncomment this line to see all urls the script is finding before deduplication
     ).to(set)
 
