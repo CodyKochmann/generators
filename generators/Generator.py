@@ -217,7 +217,8 @@ Generator.add_methods([
     [generators.chain, [Generator, iterable, iterable, iterable]],
     [generators.chunks, [Generator, int], 'chunk'],
     [generators.chunk_on, [Generator, callable]],
-    [generators.consume, [Generator]],
+    [generators.consume, [Generator]],  # leave this one here for backwards compatability
+    [generators.consume, [Generator], 'run'],
     [generators.every_other, [Generator, int]],
     [generators.first, [Generator]],
     [generators.first, [Generator, int]],
@@ -324,3 +325,5 @@ if __name__ == '__main__':
     print(Generator(range(10))[-2,-4].max())
     print(Generator(range(10))[-2,-4].min())
     print(Generator(range(10)).print()[-2,-4].print().sum())
+    print(Generator(range(10)).print(end='\n-\n').consume())
+    print(Generator(range(10)).print(end='\n--\n').run())
