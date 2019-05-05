@@ -103,39 +103,36 @@ Out[2]:
 random number generation
 
 ```python
-In [1]: from generators import G
+In [1]: from generators import G, read
 
-In [2]: from functools import partial
-
-In [3]: random_ints = G(
-    ...:     # open /dev/random as a byte stream to generate random bytes
-    ...:     # this snippet iterates individual bytes until None is returned
-    ...:     iter(partial(open('/dev/urandom', 'rb').read, 1), None)
+In [2]: random_ints = G(
+    ...:     # open /dev/urandom as a byte stream to read random bytes in
+    ...:     read('/dev/urandom', mode='rb', record_size=1)
     ...: ).map(
     ...:     # convert the bytes to ints
     ...:     lambda i: int.from_bytes(i, 'little')
     ...: )
 
+In [3]: next(random_ints)
+Out[3]: 186
+
 In [4]: next(random_ints)
-Out[4]: 186
+Out[4]: 235
 
-In [5]: next(random_ints)
-Out[5]: 235
+In [5]: # if we need to manipulate the stream further we still can
 
-In [6]: # if we need to manipulate the stream further we still can
+In [6]: random_int_chunks = random_ints.chunk(4)
 
-In [7]: random_int_chunks = random_ints.chunk(4)
+In [7]: next(random_int_chunks)
+Out[7]: (235, 255, 170, 135)
 
 In [8]: next(random_int_chunks)
-Out[8]: (235, 255, 170, 135)
+Out[8]: (132, 56, 22, 170)
 
-In [9]: next(random_int_chunks)
-Out[9]: (132, 56, 22, 170)
+In [9]: random_int_chunks.map(sum).first(8).to(list)
+Out[9]: [649, 710, 294, 699, 550, 581, 561, 726]
 
-In [10]: random_int_chunks.map(sum).first(8).to(list)
-Out[10]: [649, 710, 294, 699, 550, 581, 561, 726]
-
-In [11]: random_ints.print().accumulate().first(10).to(list)
+In [10]: random_ints.print().accumulate().first(10).to(list)
 74
 236
 106
@@ -146,15 +143,15 @@ In [11]: random_ints.print().accumulate().first(10).to(list)
 108
 38
 65
-Out[11]: [74, 310, 416, 610, 645, 690, 795, 903, 941, 1006]
+Out[10]: [74, 310, 416, 610, 645, 690, 795, 903, 941, 1006]
 
-In [12]: # this also makes it easy to analyze infinite streams
+In [11]: # this also makes it easy to analyze infinite streams
 
-In [13]: random_ints.first(10000).to(max)
-Out[13]: 255
+In [12]: random_ints.first(10000).to(max)
+Out[12]: 255
 
-In [14]: random_ints.first(10000).to(min)
-Out[14]: 0
+In [13]: random_ints.first(10000).to(min)
+Out[13]: 0
 ```
 
 ### Benchmarking
