@@ -13,6 +13,14 @@ class Test_apply_to_last(unittest.TestCase):
             list(apply_to_last([1, 2, 3], [1, 2, 3]))
         with self.assertRaises(AssertionError):
             list(apply_to_last(3, lambda i:None))
+    def test_apply_to_last_of_empty_iterator(self):
+        l = []
+        list(apply_to_last(range(0), l.append))
+        self.assertEqual(l, [], 'apply_to_last should not actually do anything with l')
+    def test_apply_to_last_of_single_iterator(self):
+        l = []
+        list(apply_to_last(range(1), l.append))
+        self.assertEqual(l, [0], 'apply_to_last should have appended one item')
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
