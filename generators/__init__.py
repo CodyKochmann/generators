@@ -61,6 +61,16 @@ try:
 except ImportError:
     pass
 
+# attempt to suck in all the tests so tests can be ran with:
+#   python -m unittest generators
+try:
+    from tests import *
+except:
+    pass
+
+#import unittest
+#unittest.defaultTestLoader.discover(os.path.join(os.path.dirname(__file__), 'tests'))
+
 #    print('importing Generator')
 #else:
 #    print('skipping Generator')
