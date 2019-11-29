@@ -43,6 +43,7 @@ from skip_first import skip_first
 from skip_last import skip_last
 from split import split
 from started import started
+from switch import switch
 from tee import tee
 from timed_pipe import timed_pipe
 from timer import timer

@@ -245,10 +245,14 @@ Generator.add_methods([
     [generators.skip_last, [Generator, int]],
     [generators.split, [Generator, iterable]],
     [generators.split, [Generator, iterable, bool]],
+    [generators.switch, [Generator, callable, dict]],
+    [generators.switch, [Generator, callable, dict, callable]],
     [generators.tee, [Generator, str]],
     [generators.tee, [Generator, str, callable]],
     [generators.timed_pipe, [Generator], 'timed'],
     [generators.timed_pipe, [Generator, int], 'timed'],
+    [generators.timed_pipe, [Generator], 'time_limit'],
+    [generators.timed_pipe, [Generator, int], 'time_limit'],
     [generators.unfork, [Generator]],
     [generators.uniq, [Generator]],
     [generators.window, [Generator]],
@@ -295,7 +299,7 @@ Generator.add_methods([
     [getattr(itertools, 'accumulate', _accumulate), [Generator, callable], 'accumulate'],
     [getattr(itertools, 'accumulate', _accumulate), [Generator], 'accumulate'],
     [getattr(itertools, 'ifilter', filter), [callable, Generator], 'filter'],
-    [getattr(itertools, 'filterfalse', getattr(itertools, 'ifilterfalse', (lambda f,g:(i for i in g if f(i))))), [Generator, int], 'filterfalse'],
+    [getattr(itertools, 'filterfalse', getattr(itertools, 'ifilterfalse', (lambda f,g:(i for i in g if f(i))))), [Generator, callable], 'filterfalse'],
     [getattr(itertools, 'izip', zip), [Generator, int], 'zip']
 ])
 
