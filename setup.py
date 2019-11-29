@@ -2,7 +2,7 @@ from __future__ import print_function
 from distutils.core import setup
 import sys, os, setuptools
 
-version = '2019.11.29.2'
+version = '2019.11.29.3'
 name = 'generators'
 packages = setuptools.find_packages()
 
@@ -28,6 +28,7 @@ def requires():
 
 
 setup(
+  name = name,
   version = version,
   packages = packages,
   install_requires = list(requires()),
