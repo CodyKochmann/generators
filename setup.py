@@ -32,7 +32,6 @@ setup(
   packages = packages,
   install_requires = list(requires()),
   zip_safe=True,
-  version = version,
   description = 'a high performance pipeline processor written in python',
   author = 'Cody Kochmann',
   author_email = 'kochmanncody@gmail.com',
