@@ -4,7 +4,7 @@
 [![Downloads](https://pepy.tech/badge/generators/month)](https://pepy.tech/project/generators)
 [![Downloads](https://pepy.tech/badge/generators/week)](https://pepy.tech/project/generators)
 
-Where all of my generator tricks are collected!
+High performance pipeline processing in python.
 
 ## How to install it?
 

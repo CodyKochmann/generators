@@ -23,6 +23,10 @@ if '__main__.py' in sys.argv[-1] or 'help' in sys.argv:
 args, unknown = parser.parse_known_args()
 
 if args.test:
-    sys.argv = [sys.argv[0]]
-    from generators.__test__ import *
-    main(verbosity=2)
+    import os, sys, generators
+    prev = os.getcwd()
+    try:
+        os.chdir(min(generators.__path__, key=len))
+        os.system('{} -m unittest --verbose'.format(sys.executable))
+    finally:
+        os.chdir(prev)

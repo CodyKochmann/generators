@@ -1,9 +1,12 @@
 from __future__ import print_function
 from distutils.core import setup
-import sys
-import os
+import sys, os, setuptools
 
 version = '2019.6.21'
+name = 'generators'
+packages = setuptools.find_packages()
+
+assert name in packages, [name, packages]  # if package name doesnt show up, something is wrong
 
 def using_ios_stash():
     ''' returns true if sys path hints the install is running on ios '''
@@ -14,21 +17,27 @@ def using_ios_stash():
 
 def requires():
     ''' generates a list of requirements for generators '''
-    yield 'strict_functions'
+    with open('requirements.txt', 'r') as f:
+        for line in map(str.strip, f):
+            if line:
+                yield line
+    # only require future if using py2 and not using stash in ios
     if sys.version_info < (3,0):
         if not using_ios_stash():
             yield 'future'
 
+
 setup(
-  name = 'generators',
-  packages = ['generators'], # this must be the same as the name above
-  install_requires = list(requires()),
   version = version,
-  description = 'collection of helpful generators that should have been in itertools',
+  packages = packages,
+  install_requires = list(requires()),
+  zip_safe=True,
+  version = version,
+  description = 'a high performance pipeline processor written in python',
   author = 'Cody Kochmann',
   author_email = 'kochmanncody@gmail.com',
   url = 'https://github.com/CodyKochmann/generators',
   download_url = 'https://github.com/CodyKochmann/generators/tarball/{}'.format(version),
-  keywords = ['generators', 'iter', 'itertools', 'combinations', 'chain', 'iterate', 'gen', 'Generator'],
-  classifiers = [],
+  keywords = ['generators', 'iter', 'itertools', 'combinations', 'pipe', 'pipeline', 'performance', 'fast', 'chain', 'iterate', 'gen', 'Generator'],
+  classifiers = []
 )
