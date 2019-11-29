@@ -2,7 +2,7 @@ from __future__ import print_function
 from distutils.core import setup
 import sys, os, setuptools
 
-version = '2019.11.29.3'
+version = '2019.11.29.4'
 name = 'generators'
 packages = setuptools.find_packages()
 
@@ -17,10 +17,7 @@ def using_ios_stash():
 
 def requires():
     ''' generates a list of requirements for generators '''
-    with open('requirements.txt', 'r') as f:
-        for line in map(str.strip, f):
-            if line:
-                yield line
+    yield 'strict_functions'
     # only require future if using py2 and not using stash in ios
     if sys.version_info < (3,0):
         if not using_ios_stash():
