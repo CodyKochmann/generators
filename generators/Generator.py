@@ -205,6 +205,10 @@ Generator.add_methods([
     [generators.map, [Generator, callable, callable]],
     [generators.map, [Generator, callable, callable, callable]],
     [generators.map, [Generator, callable, callable, callable, callable]],
+    [generators.map_parallel, [Generator, callable, int]],
+    [generators.map_multithread, [Generator, callable, int]],
+    [generators.map_multicore, [Generator, callable, int]],
+
     [generators.all_subslices, [Generator]],
     [generators.all_substrings, [Generator]],
     [generators.alternator, [Generator, iterable], 'alternate'],
@@ -302,6 +306,11 @@ Generator.add_methods([
     [getattr(itertools, 'filterfalse', getattr(itertools, 'ifilterfalse', (lambda f,g:(i for i in g if f(i))))), [Generator, callable], 'filterfalse'],
     [getattr(itertools, 'izip', zip), [Generator, int], 'zip']
 ])
+
+# aliases for better tab completion discovery
+Generator.parallel_map = Generator.map_parallel
+Generator.multicore_map = Generator.map_multicore
+Generator.multithread_map = Generator.map_multithread
 
 if __name__ == '__main__':
 

@@ -31,6 +31,7 @@ from just import just
 from last import last
 from loop import loop
 from map import map
+from map_parallel import map_parallel, map_multicore, map_multithread
 from multi_ops import multi_ops
 from peekable import peekable
 from read import read
@@ -82,4 +83,3 @@ sys.path.remove(os.path.dirname(__file__))
 
 del sys
 del os
-
