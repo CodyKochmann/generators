@@ -40,6 +40,7 @@ from repeater import repeater
 from reverse import reverse
 from side_task import side_task
 from skip import skip
+from skip_errors import skip_errors
 from skip_first import skip_first
 from skip_last import skip_last
 from split import split

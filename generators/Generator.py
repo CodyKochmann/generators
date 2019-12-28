@@ -163,6 +163,16 @@ class Generator:
             lambda i:print('{}{}'.format(before, i), **print_options)
         )))
 
+    def skip_errors(self, *, log=True, logger=None, ex_type=Exception):
+        return Generator(
+            generators.skip_errors(
+                self,
+                log=log,
+                logger=logger,
+                ex_type=ex_type
+            )
+        )
+
     benchmark = rps
 
     #def __slice__(self, s):

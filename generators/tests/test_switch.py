@@ -51,7 +51,7 @@ class TestGeneratorsSwitch(unittest.TestCase):
                 9.0
             ]
         )
-    
+
     def test_switch_basic_usage_3(self):
         self.assertEqual(
             G(
@@ -66,7 +66,7 @@ class TestGeneratorsSwitch(unittest.TestCase):
             ).to(list),
             ['HELLO', 'worldworld', 'o', 'something']
         )
-        
+
     def test_switch_with_default_1(self):
         self.assertEqual(
             G(
@@ -92,7 +92,7 @@ class TestGeneratorsSwitch(unittest.TestCase):
                 9.0
             ]
         )
-    
+
     def test_switch_with_default_2(self):
         self.assertEqual(
             G(
@@ -118,7 +118,7 @@ class TestGeneratorsSwitch(unittest.TestCase):
                 9.0
             ]
         )
-        
+
     def test_switch_benchmark(self):
         '''ensure switch can process 1,000,000 items a second minimum'''
         from itertools import count
@@ -132,8 +132,8 @@ class TestGeneratorsSwitch(unittest.TestCase):
                     2: lambda i: float(i)
                 }
             ).benchmark(),
-            1000000
+            100000
         )
-    
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
