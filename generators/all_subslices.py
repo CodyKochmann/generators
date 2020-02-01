@@ -4,14 +4,6 @@
 # @Last Modified 2017-10-12
 # @Last Modified time: 2017-12-09 10:23:27
 
-import sys
-import os.path
-
-sys.path.append(os.path.dirname(__file__))
-
-del sys
-del os
-
 from .iterable import iterable
 from itertools import islice
 from collections import deque
