@@ -6,7 +6,7 @@
 
 from collections import deque
 from strict_functions import strict_globals
-from iterable import iterable
+from .iterable import iterable
 
 @strict_globals(deque=deque, iterable=iterable)
 def chunk_on(pipeline, new_chunk_signal, output_type=tuple):

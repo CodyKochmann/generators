@@ -4,7 +4,7 @@
 # @Last Modified by:   Cody Kochmann
 # @Last Modified time: 2017-12-09 10:37:37
 
-from started import started
+from .started import started
 from strict_functions import noglobals
 
 

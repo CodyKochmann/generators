@@ -1,6 +1,6 @@
 import unittest
 from strict_functions import strict_globals
-from iterable import iterable
+from .iterable import iterable
 
 @strict_globals(iterable=iterable)
 def apply_to_last(stream, fn):

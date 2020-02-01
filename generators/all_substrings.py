@@ -4,7 +4,7 @@
 # @Date:   2017-09-09
 # @Last Modified by:   Cody Kochmann
 
-from window import window
+from .window import window
 from strict_functions import strict_globals
 
 

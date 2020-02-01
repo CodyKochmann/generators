@@ -4,7 +4,7 @@
 # @Last Modified by:   Cody Kochmann
 # @Last Modified time: 2018-02-17 11:53:30
 
-from window import window
+from .window import window
 from collections import deque
 from itertools import islice
 

@@ -5,9 +5,9 @@
 # @Last Modified time: 2018-02-22 15:58:25
 
 from collections import deque
-from skip import skip
-from window import window
-from chain import chain
+from .skip import skip
+from .window import window
+from .chain import chain
 
 def split(pipe, splitter, skip_empty=False):
     ''' this function works a lot like groupby but splits on given patterns,

@@ -12,9 +12,9 @@ else:
     map = map
 
 from strict_functions import strict_globals
-from chunk_on import chunk_on
-from apply_to_last import apply_to_last
-from iterable import iterable
+from .chunk_on import chunk_on
+from .apply_to_last import apply_to_last
+from .iterable import iterable
 
 @strict_globals(zip_longest=zip_longest, apply_to_last=apply_to_last, chunk_on=chunk_on, iterable=iterable, map=map)
 def chunks(stream, chunk_size, output_type=tuple):

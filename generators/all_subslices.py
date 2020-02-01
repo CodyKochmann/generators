@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(__file__))
 del sys
 del os
 
-from iterable import iterable
+from .iterable import iterable
 from itertools import islice
 from collections import deque
 from strict_functions import strict_globals

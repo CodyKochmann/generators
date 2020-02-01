@@ -4,7 +4,7 @@
 # @Last Modified by:   Cody Kochmann
 # @Last Modified time: 2018-02-17 12:02:24
 
-from skip import skip
+from .skip import skip
 
 def skip_first(pipe, items=1):
     ''' this is an alias for skip to parallel the dedicated skip_last function

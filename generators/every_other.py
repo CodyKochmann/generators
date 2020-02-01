@@ -5,7 +5,7 @@
 # @Last Modified time: 2018-02-17 14:38:04
 
 from itertools import cycle
-from repeater import repeater
+from .repeater import repeater
 
 def every_other(pipe, how_many=1):
     ''' feeding this function a pipe yields every other (or how ever many)

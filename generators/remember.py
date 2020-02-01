@@ -4,8 +4,8 @@
 # @Last Modified by:   Cody Kochmann
 # @Last Modified time: 2018-02-17 15:00:00
 
-from loop import loop
-from started import started
+from .loop import loop
+from .started import started
 
 @started
 def remember():

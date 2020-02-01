@@ -12,8 +12,8 @@ what does our map do
 
 """
 
-from multi_ops import multi_ops
-from window import window
+from .multi_ops import multi_ops
+from .window import window
 from strict_functions import noglobals, strict_globals
 
 @noglobals

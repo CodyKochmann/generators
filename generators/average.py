@@ -4,8 +4,8 @@
 # @Last Modified by:   Cody Kochmann
 # @Last Modified time: 2017-12-09 10:26:44
 
-from started import started
-from total import total
+from .started import started
+from .total import total
 from strict_functions import strict_globals
 
 

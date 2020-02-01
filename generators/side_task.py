@@ -7,16 +7,8 @@
 from __future__ import print_function
 del print_function
 
-import sys
-import os.path
-
-sys.path.append(os.path.dirname(__file__))
-
-del sys
-del os
-
-from iterable import iterable
-from map import map
+from .iterable import iterable
+from .map import map
 
 from strict_functions import strict_globals
 

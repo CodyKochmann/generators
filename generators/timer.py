@@ -4,7 +4,7 @@
 # @Last Modified by:   Cody Kochmann
 # @Last Modified time: 2017-12-09 13:29:27
 
-from started import started
+from .started import started
 from timeit import default_timer as ts
 from strict_functions import strict_globals
 

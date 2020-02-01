@@ -2,7 +2,7 @@ from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 from queue import Queue
 
-from chunks import chunks
+from .chunks import chunks
 
 __all__ = 'map_parallel', 'map_multicore', 'map_multithread'
 
