@@ -1,0 +1,50 @@
+stages:
+  - test
+  - deploy
+
+test_latest:
+  stage: test
+  image: python:latest
+  before_script:
+    - pip install .
+  script:
+    - python -m unittest generators
+
+test_alpine:
+  stage: test
+  image: python:alpine
+  before_script:
+    - pip install .
+  script:
+    - python -m unittest generators
+
+test_3.7:
+  stage: test
+  image: python:3.7
+  before_script:
+    - pip install .
+  script:
+    - python -m unittest generators
+
+test_3.6:
+  stage: test
+  image: python:3.6
+  before_script:
+    - pip install .
+  script:
+    - python -m unittest generators
+
+test_3.5:
+  stage: test
+  image: python:3.5
+  before_script:
+    - pip install .
+  script:
+    - python -m unittest generators
+
+deploy_job:
+  stage: deploy
+  image: docker:dind
+  script:
+    - pwd
+    - ls -lthar
