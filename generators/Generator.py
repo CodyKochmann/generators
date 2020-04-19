@@ -238,6 +238,7 @@ Generator.add_methods([
     [generators.first, [Generator, int]],
     [generators.fork, [Generator, int]],
     [generators.iterable, [object]],
+    [generators.ifmap, [Generator, callable, callable]],
     [generators.last, [Generator]],
     [generators.last, [Generator, int]],
     [generators.multi_ops, [Generator, callable]],

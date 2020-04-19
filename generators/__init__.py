@@ -24,6 +24,7 @@ from .early_warning import early_warning
 from .every_other import every_other
 from .first import first
 from .fork import fork
+from .ifmap import ifmap
 from .itemgetter import itemgetter
 from .iter_csv import iter_csv
 from .iter_kv import iter_kv
