@@ -6,7 +6,8 @@
 
 from functools import partial
 import unittest
-from generators import chunk_on
+from itertools import count
+from generators import chunk_on, G
 
 class Test_chunk_on(unittest.TestCase):
     ''' this runs tests to verify behavior of generators.chunks '''
@@ -52,15 +53,30 @@ class Test_chunk_on(unittest.TestCase):
     def test_chunk_on_bool_output(self):
         self.validate_chunk_on_output_type(bool)
 
+    def test_chunk_on_g_usage(self):
+        self.assertEqual(
+            G(
+                range(32)
+            ).chunk_on(
+                lambda i: str(i).endswith('0')
+            ).to(list), 
+            [
+                (0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+                (10, 11, 12, 13, 14, 15, 16, 17, 18, 19),
+                (20, 21, 22, 23, 24, 25, 26, 27, 28, 29),
+                (30, 31)
+            ]
+        )
 
-    def test_chunk_on_input_validation(self):
-        #with self.assertRaises(AssertionError):
-        #    list(chunk_on(1, 2))
-        #with self.assertRaises(AssertionError):
-        #    list(chunk_on(range(10), 'hi'))
-        #with self.assertRaises(AssertionError):
-        #    list(chunk_on(range(10), 2))
-        pass
+    def test_chunk_on_speed(self):
+        self.assertGreater(
+            G(
+                count()
+            ).chunk_on(
+                lambda i: i%10 == 0
+            ).benchmark(),
+            1_000_000
+        )
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
