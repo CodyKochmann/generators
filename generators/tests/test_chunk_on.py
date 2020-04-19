@@ -75,7 +75,7 @@ class Test_chunk_on(unittest.TestCase):
             ).chunk_on(
                 lambda i: i%10 == 0
             ).benchmark(),
-            1_000_000
+            100_000
         )
 
 if __name__ == '__main__':
