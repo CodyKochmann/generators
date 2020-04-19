@@ -75,6 +75,29 @@ class Test_chunks(unittest.TestCase):
         with self.assertRaises(AssertionError):
             list(chunks(range(10), 2, 'fishsticks'))
 
+    def test_chunks_2_dimensional(self):
+        self.assertEqual(
+            list(chunks(range(9), 3, 3)),
+            [(0, 1, 2), (3, 4, 5), (6, 7, 8)]
+        )
+
+    def test_chunks_3_dimensional(self):
+        self.assertEqual(
+            list(chunks(range(8), 2, 2, 2)),
+            [(0, 1), (2, 3), (4, 5), (6, 7)]
+        )
+
+    def test_chunks_2_dimensional_g_usage(self):
+        self.assertEqual(
+            G(range(9)).chunk(3, 3).to(list),
+            [(0, 1, 2), (3, 4, 5), (6, 7, 8)]
+        )
+
+    def test_chunks_3_dimensional_g_usage(self):
+        self.assertEqual(
+            G(range(8)).chunk(2, 2, 2).to(list),
+            [(0, 1), (2, 3), (4, 5), (6, 7)]
+        )
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
