@@ -23,7 +23,7 @@ def _chunks(stream, chunk_size, output_type=tuple):
     assert callable(output_type), 'chunks needs output_type to be callable'
     if callable(chunk_size):
         ''' chunk_size is acting as a separator function '''
-        for chunk in chunk_on(stream, chunk_size, output_type):
+        for chunk in chunk_on(stream, chunk_size, output_type=output_type):
             yield chunk
     else:
         it = iter(stream)
@@ -48,7 +48,7 @@ def chunks(stream, *chunk_sizes, output_type=tuple):
     assert callable(output_type), 'chunks needs output_type to be callable'
     
     for size in chunk_sizes:
-        stream = (chunk_on if callable(size) else _chunks)(
+        stream = _chunks(
             stream,
             size,
             output_type=output_type

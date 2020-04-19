@@ -63,7 +63,7 @@ class Test_chunks(unittest.TestCase):
         l = list(range(30))
 
         self.assertEqual(
-            list(chunks(l, 2, list)),
+            list(chunks(l, 2, output_type=list)),
             [
                 [ 0,  1],
                 [ 2,  3],
@@ -88,7 +88,7 @@ class Test_chunks(unittest.TestCase):
         l = list(range(30))
 
         self.assertEqual(
-            list(chunks(l, 15, list)),
+            list(chunks(l, 15, output_type=list)),
             [
                 [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14],
                 [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
@@ -100,7 +100,7 @@ class Test_chunks(unittest.TestCase):
         l = list(range(30))
 
         self.assertEqual(
-            list(chunks(l, 20, list)),
+            list(chunks(l, 20, output_type=list)),
             [
                 [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
                 [20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
