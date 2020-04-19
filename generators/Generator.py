@@ -121,7 +121,7 @@ class Generator:
         if name is None:
             name = fn.__name__
         @wraps(fn)
-        def method(*args):
+        def method(*args) -> Generator:
             return fn(*Generator.__organize_args__(
                 arg_pattern,
                 list(args),
@@ -235,11 +235,10 @@ Generator.add_methods([
     [generators.chunks, [Generator, int, int], 'chunk'],
     [generators.chunks, [Generator, int, int, int], 'chunk'],
     [generators.chunks, [Generator, int, int, int, int], 'chunk'],
-    [generators.chunks, [Generator, int, int, int, int, int], 'chunk'],
-    [generators.chunks, [Generator, int, int, int, int, int, int], 'chunk'],
-    [generators.chunks, [Generator, int, int, int, int, int, int, int], 'chunk'],
-    [generators.chunks, [Generator, int, int, int, int, int, int, int, int], 'chunk'],
-    [generators.chunks, [Generator, int, int, int, int, int, int, int, int, int], 'chunk'],
+    [generators.chunks, [Generator, callable], 'chunk'],
+    [generators.chunks, [Generator, callable, callable], 'chunk'],
+    [generators.chunks, [Generator, callable, callable, callable], 'chunk'],
+    [generators.chunks, [Generator, callable, callable, callable, callable], 'chunk']
     [generators.chunk_on, [Generator, callable]],
     [generators.consume, [Generator]],  # leave this one here for backwards compatability
     [generators.consume, [Generator], 'run'],

@@ -48,7 +48,7 @@ def chunks(stream, *chunk_sizes, output_type=tuple):
     assert callable(output_type), 'chunks needs output_type to be callable'
     
     for size in chunk_sizes:
-        stream = _chunks(
+        stream = (chunk_on if callable(size) else _chunks)(
             stream,
             size,
             output_type=output_type
