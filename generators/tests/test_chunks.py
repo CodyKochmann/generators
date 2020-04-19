@@ -5,11 +5,11 @@
 # @Last Modified 2017-10-17
 
 import unittest
-from generators import chunks
+from generators import chunks, G
 
 class Test_chunks(unittest.TestCase):
     ''' this runs tests to verify behavior of generators.chunks '''
-    def test_chunks_basic(self):
+    def test_chunks_basic_1(self):
         ''' test the basic usage of chunks '''
         l = list(range(30))
 
@@ -17,38 +17,79 @@ class Test_chunks(unittest.TestCase):
             list(chunks(l, 2)),
             [(0, 1), (2, 3), (4, 5), (6, 7), (8, 9), (10, 11), (12, 13), (14, 15), (16, 17), (18, 19), (20, 21), (22, 23), (24, 25), (26, 27), (28, 29)]
         )
+
+    def test_chunks_basic_2(self):
+        ''' test the basic usage of chunks '''
+        l = list(range(30))
+
         self.assertEqual(
             list(chunks(l, 15)),
             [(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14), (15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29)]
         )
+
+    def test_chunks_basic_3(self):
+        ''' test the basic usage of chunks '''
+        l = list(range(30))
+
         self.assertEqual(
             list(chunks(l, 20)),
             [(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19), (20, 21, 22, 23, 24, 25, 26, 27, 28, 29)]
         )
+
+    def test_chunks_basic_4(self):
+        ''' test the basic usage of chunks '''
+        l = list(range(30))
+
         self.assertEqual(
-            list(chunks(l, 2, set)),
+            list(chunks(l, 2, list)),
             [{0, 1}, {2, 3}, {4, 5}, {6, 7}, {8, 9}, {10, 11}, {12, 13}, {14, 15}, {16, 17}, {18, 19}, {20, 21}, {22, 23}, {24, 25}, {26, 27}, {28, 29}]
         )
+
+    def test_chunks_basic_5(self):
+        ''' test the basic usage of chunks '''
+        l = list(range(30))
+
         self.assertEqual(
-            list(chunks(l, 15, set)),
+            list(chunks(l, 15, list)),
             [{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, {15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29}]
         )
+
+    def test_chunks_basic_6(self):
+        ''' test the basic usage of chunks '''
+        l = list(range(30))
+
         self.assertEqual(
-            list(chunks(l, 20, set)),
+            list(chunks(l, 20, list)),
             [{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, {20, 21, 22, 23, 24, 25, 26, 27, 28, 29}]
         )
+
+    def test_chunks_basic_7(self):
+        ''' test the basic usage of chunks '''
+        l = list(range(30))
+
         self.assertEqual(
             list(chunks(l, lambda i:i==15)),
             [(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14), (15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29)]
         )
+
+    def test_chunks_basic_8(self):
+        ''' test the basic usage of chunks '''
+        l = list(range(30))
+
         self.assertEqual(
             list(chunks(l, lambda i:i%5==0)),
             [(0, 1, 2, 3, 4), (5, 6, 7, 8, 9), (10, 11, 12, 13, 14), (15, 16, 17, 18, 19), (20, 21, 22, 23, 24), (25, 26, 27, 28, 29)]
         )
+
+    def test_chunks_basic_9(self):
+        ''' test the basic usage of chunks '''
+        l = list(range(30))
+
         self.assertEqual(
             list(chunks(l, lambda i:str(i).startswith('1'))),
             [(0,), (1, 2, 3, 4, 5, 6, 7, 8, 9), (10,), (11,), (12,), (13,), (14,), (15,), (16,), (17,), (18,), (19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29)]
         )
+
 
     def test_chunks_ranged(self, test_range=10, chunk_size=2):
         pipe = chunks(range(test_range), chunk_size)
