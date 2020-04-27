@@ -2,7 +2,7 @@ from __future__ import print_function
 from distutils.core import setup
 import sys, os, setuptools
 
-version = '2020.2.4'
+version = '2020.4.27'
 name = 'generators'
 packages = setuptools.find_packages()
 
