@@ -5,10 +5,10 @@
 # @Last Modified time: 2017-12-09 11:21:55
 
 from strict_functions import noglobals
-
+from typing import Any
 
 @noglobals
-def iterable(target):
+def iterable(target: Any) -> bool:
     ''' returns true if the given argument is iterable '''
     if any(i in ('next', '__next__', '__iter__') for i in dir(target)):
         return True

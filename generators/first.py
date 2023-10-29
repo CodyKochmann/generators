@@ -5,8 +5,9 @@
 # @Last Modified time: 2018-02-17 10:59:27
 
 from itertools import islice
+from typing import Iterable, Any, Union
 
-def first(pipe, items=1):
+def first(pipe: Iterable[Any], items: int = 1) -> Union[Any, islice]:
     ''' first is essentially the next() function except it's second argument
         determines how many of the first items you want. If items is more than
         1 the output is an islice of the generator. If items is 1, the first

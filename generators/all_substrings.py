@@ -6,10 +6,10 @@
 
 from .window import window
 from strict_functions import strict_globals
+from typing import Iterable
 
-
-@strict_globals(window=window)
-def all_substrings(s):
+@strict_globals(window=window, Iterable=Iterable)
+def all_substrings(s: str) -> Iterable[str]:
     ''' yields all substrings of a string '''
     join = ''.join
     for i in range(1, len(s) + 1):
@@ -18,3 +18,4 @@ def all_substrings(s):
 
 del window
 del strict_globals
+del Iterable
